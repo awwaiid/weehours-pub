@@ -1,6 +1,7 @@
 import * as net from 'net';
 import * as readline from 'readline';
 import { Database } from '../database/database';
+import { MessageParser } from '../parser/message-parser';
 
 export interface MudConnection {
   host: string;
@@ -14,8 +15,10 @@ export class RawMudTelnetClient {
   private rl: readline.Interface;
   private isConnected = false;
   private database: Database;
+  private parser: MessageParser;
   private sessionId = 1;
   private loginState = 'waiting'; // 'waiting', 'username', 'password', 'logged_in'
+  private messageCounter = 0;
 
   constructor(private config: MudConnection) {
     this.socket = new net.Socket();
@@ -24,6 +27,7 @@ export class RawMudTelnetClient {
       output: process.stdout
     });
     this.database = new Database();
+    this.parser = new MessageParser();
   }
 
   async connect(): Promise<void> {
@@ -64,6 +68,7 @@ export class RawMudTelnetClient {
     
     this.socket.on('data', async (data: Buffer) => {
       const text = data.toString();
+      this.messageCounter++;
       
       // Debug output - show raw text content
       console.log('\n[DEBUG INCOMING]:', JSON.stringify(text));
@@ -77,11 +82,23 @@ export class RawMudTelnetClient {
       // Auto-login logic
       await this.handleAutoLogin(text);
       
+      // Store raw message
       await this.database.logMessage({
         session_id: this.sessionId,
         direction: 'incoming',
         content: text
       });
+      
+      // Parse message into events and store them
+      try {
+        const events = this.parser.parseMessage(this.messageCounter, text, new Date().toISOString());
+        for (const event of events) {
+          await this.database.logParsedEvent(event);
+          console.log(`[PARSED] ${event.event_type}: ${JSON.stringify(event.data).substring(0, 100)}...`);
+        }
+      } catch (error) {
+        console.error('Parser error:', error);
+      }
     });
 
     this.socket.on('close', () => {
@@ -161,11 +178,28 @@ export class RawMudTelnetClient {
       
       this.socket.write(command + '\n');
       
+      // Store raw outgoing message
       await this.database.logMessage({
         session_id: this.sessionId,
         direction: 'outgoing',
         content: command
       });
+      
+      // Create a simple command event
+      const commandEvent = {
+        session_id: this.sessionId,
+        event_type: 'user_command',
+        data: {
+          command: command.trim(),
+          player: 'Awwaiid'
+        },
+        raw_message_ids: [this.messageCounter + 1],
+        timestamp: new Date().toISOString()
+      };
+      
+      await this.database.logParsedEvent(commandEvent);
+      console.log(`[PARSED] user_command: ${command}`);
+      
     } catch (error) {
       console.error('Error sending command:', error);
     }

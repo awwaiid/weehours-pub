@@ -2,12 +2,12 @@
   "name": "weehours-pub",
   "version": "1.0.0",
   "description": "MUD client for weehours.net with web interface",
-  "type": "module",
   "main": "dist/cli/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/cli/index.ts",
     "start": "node dist/cli/index.js",
+    "query": "ts-node src/query-events.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
@@ -33,9 +33,9 @@
     "@types/node": "^20.12.7",
     "@types/sqlite3": "^3.1.11",
     "@types/ws": "^8.5.10",
-    "@typescript-eslint/eslint-plugin": "^8.36.0",
-    "@typescript-eslint/parser": "^8.36.0",
-    "eslint": "^9.31.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }

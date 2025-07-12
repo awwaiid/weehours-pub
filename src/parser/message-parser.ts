@@ -27,7 +27,8 @@ export class MessageParser {
     COMMAND_PROMPT: 'command_prompt',
     TELNET_NEGOTIATION: 'telnet_negotiation',
     WELCOME_SCREEN: 'welcome_screen',
-    URL_SUBMISSION: 'url_submission'
+    URL_SUBMISSION: 'url_submission',
+    USER_COMMAND: 'user_command'
   } as const;
 
   private context: MessageParserContext = {
@@ -134,14 +135,19 @@ export class MessageParser {
 
   private isHelpText(content: string): boolean {
     return content.includes('Commands      :') || 
-           content.includes('--------------------------------------------------------------------------');
+           content.includes('--------------------------------------------------------------------------') ||
+           (content.includes('\t') && (content.includes('ack') || content.includes('agree') || content.includes('applaud')));
   }
 
   private isSystemResponse(content: string): boolean {
     return content.startsWith('Syntax:') || 
            content.trim() === 'What?' ||
            content.includes('Sorry, no such help topic') ||
-           content.includes('Changed \'idle\' to');
+           content.includes('Changed \'idle\' to') ||
+           content.includes('Your official electric mail address is:') ||
+           content.includes('URL added to') ||
+           content.includes('The "web" command allows you') ||
+           content.includes('The post office is south');
   }
 
   private isCommandPrompt(content: string): boolean {
