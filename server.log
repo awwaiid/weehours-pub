@@ -1,10 +1,10 @@
 
-> weehours-pub@1.0.0 web
+> zeehours-pub@1.0.0 web
 > ts-node src/server/index.ts
 
 
 
---- SERVER RESTARTING AT 2025-07-12T20:52:40.374Z ---
+--- SERVER RESTARTING AT 2025-07-12T21:53:28.828Z ---
 WeeHours MUD Web Server
 =======================
 Starting on port 3000...
@@ -24,60 +24,23 @@ Statement 4 executed successfully
 Database initialized successfully
 WebServer running on http://localhost:3000
 Next.js app ready
- ○ Compiling / ...
- ✓ Compiled / in 1952ms (669 modules)
- GET / 200 in 4013ms
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN:                   *                              +               (          )
-                                                               (    ()      
-                              *                               ( ()            
-      *                                                       (()    ()        )
-                       +                                     ()  ()            
-               *                                              (()   ()         ) 
-                                    *                         ( () ()  
-                                                               (  () ()       )
-                                                                (   ()      
-        +                   EEEEEEEEEEE  \                        (    O  )
-                          EE           EE  \            +
-                         E               E  \
-             +           E                 E  \                      +
-                       EE      here        E |
-      
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN:                  EE                  E/ 
-                      EE       lies       E \             +
-   +                  E                   EE |
-                      EE      M  U  D      E |
-                      EE                  EE |                          .
-        .              E         #        E  |         .
-                       E       #####      E  |                  .
-                      EE         #        EE |
-               .      E          #         E |             .
-    .                 EE         #        EE |
-                       EE                 EE |                       .
-                      EE                   E |                  
-,,,,,,,,,,,,,,,,,,,,,,E,,   ,   ,      ,,,,E,|,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-//////////////////////E/ ,///,///,/,///////E///////////////////////////////////
-//////////////////////E,///////////////////E///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-+ + +  WEEHOURS LPMUD + + LOGIN AS guest TO VISIT + + HTTP://WEEHOURS.NET + + +
-
-What is your name: 
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_OUT: awwaiid
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: ��
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: Password: 
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_OUT: ***REMOVED***
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: 
-[Awwaiid has entered the game.]
-Throwing out the other copy.
-
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: ��> 
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_OUT: who
-[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: -----------------------------------------------------------------------------
-WeeHours LP :: 5 players :: 5 shown :: weehours.net 2000 :: 227 bugs
------------------------------------------------------------------------------
-(idle 3 hours) Scrottie One                                      <Elder> o\-<
-(idle 10 days) Grottie                                                   :^)~
-(idle 5 hours) Mofo                                                      o|-<
-(idle 7 hours) Otto the Horrible                                          >=)
-Awwaiid the coder                                                (Wizard)
------------------------------------------------------------------------------
-> 
+ ○ Compiling /_not-found ...
+[Error: Cannot apply unknown utility class `bg-mud-dark`]
+ ✓ Compiled /_not-found in 2.2s (666 modules)
+ GET /_next/webpack-hmr 404 in 3982ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/0620e00d5eb2894b.webpack.hot-update.json 404 in 34ms
+ ✓ Compiled / in 388ms (673 modules)
+ GET / 200 in 1307ms
+ GET / 200 in 37ms
+ GET / 200 in 55ms
+ ✓ Compiled in 836ms (683 modules)
+ GET / 200 in 858ms
+ GET / 200 in 909ms
+ ✓ Compiled in 454ms (683 modules)
+ GET / 200 in 822ms
+ GET / 200 in 828ms
+ ✓ Compiled in 150ms (323 modules)
+ GET / 200 in 22ms
+ GET / 200 in 20ms
+ GET / 200 in 49ms

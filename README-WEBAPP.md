@@ -1,6 +1,6 @@
 # WeeHours MUD Web Client
 
-A modern web-based client for weehours.net MUD with multi-user support.
+A modern web-based client for zeehours.net MUD with multi-user support.
 
 ## Quick Start
 

@@ -4,7 +4,7 @@ import { RawMudTelnetClient, MudConnection } from './raw-telnet-client';
 
 async function main() {
   const config: MudConnection = {
-    host: 'weehours.net',
+    host: 'zeehours.net',
     port: 2000,
     username: 'awwaiid',
     password: '***REMOVED***'

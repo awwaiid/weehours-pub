@@ -1,6 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-mud-dark: #1a1a1a;
+  --color-mud-light: #2d2d2d;
+  --color-mud-green: #00ff00;
+  --color-mud-cyan: #00ffff;
+  --color-mud-yellow: #ffff00;
+}
 
 @layer base {
   html {
@@ -8,48 +14,88 @@
   }
   
   body {
-    @apply bg-mud-dark text-mud-green;
+    background-color: var(--color-mud-dark);
+    color: var(--color-mud-green);
   }
 }
 
 @layer components {
   .mud-terminal {
-    @apply bg-black text-mud-green font-mono text-sm p-4 rounded border border-mud-light;
-    @apply h-96 overflow-y-auto whitespace-pre-wrap;
+    background-color: #000000;
+    color: var(--color-mud-green);
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--color-mud-light);
+    height: 24rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
   }
   
   .mud-input {
-    @apply w-full bg-mud-light text-mud-green border border-mud-green;
-    @apply px-3 py-2 font-mono text-sm rounded focus:outline-none focus:ring-2 focus:ring-mud-cyan;
+    width: 100%;
+    background-color: var(--color-mud-light);
+    color: var(--color-mud-green);
+    border: 1px solid var(--color-mud-green);
+    padding: 0.5rem 0.75rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+  }
+  
+  .mud-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-mud-cyan);
   }
   
   .mud-button {
-    @apply bg-mud-light hover:bg-mud-green hover:text-black;
-    @apply text-mud-green border border-mud-green px-4 py-2 rounded;
-    @apply font-mono text-sm transition-colors duration-200;
+    background-color: var(--color-mud-light);
+    color: var(--color-mud-green);
+    border: 1px solid var(--color-mud-green);
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .mud-button:hover {
+    background-color: var(--color-mud-green);
+    color: #000000;
   }
   
   .mud-button:disabled {
-    @apply opacity-50 cursor-not-allowed hover:bg-mud-light hover:text-mud-green;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .mud-button:disabled:hover {
+    background-color: var(--color-mud-light);
+    color: var(--color-mud-green);
   }
   
   .mud-card {
-    @apply bg-mud-light border border-mud-green rounded-lg p-6;
+    background-color: var(--color-mud-light);
+    border: 1px solid var(--color-mud-green);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
   }
   
   .mud-status-connected {
-    @apply text-mud-green;
+    color: var(--color-mud-green);
   }
   
   .mud-status-connecting {
-    @apply text-mud-yellow;
+    color: var(--color-mud-yellow);
   }
   
   .mud-status-disconnected {
-    @apply text-red-400;
+    color: #f87171;
   }
   
   .mud-status-error {
-    @apply text-red-500;
+    color: #ef4444;
   }
 }

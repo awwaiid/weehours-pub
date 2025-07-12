@@ -29,7 +29,7 @@ export default function Home() {
             WeeHours MUD Client
           </h1>
           <p className="text-mud-cyan">
-            Web-based interface for weehours.net
+            Web-based interface for zeehours.net
           </p>
         </header>
 

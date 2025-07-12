@@ -1,11 +1,11 @@
 const net = require('net');
 
-console.log('Testing raw socket connection to weehours.net:2000...');
+console.log('Testing raw socket connection to zeehours.net:2000...');
 
 const socket = new net.Socket();
 
 socket.on('connect', () => {
-  console.log('[RAW] Connected to weehours.net:2000');
+  console.log('[RAW] Connected to zeehours.net:2000');
 });
 
 socket.on('data', (data) => {
@@ -22,7 +22,7 @@ socket.on('close', () => {
   console.log('[RAW] Connection closed');
 });
 
-socket.connect(2000, 'weehours.net', () => {
+socket.connect(2000, 'zeehours.net', () => {
   console.log('[RAW] Socket connected, waiting for data...');
   
   // Send username after a delay

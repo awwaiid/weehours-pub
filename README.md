@@ -1,6 +1,6 @@
 # WeeHours MUD Client
 
-A modern TypeScript-based MUD client for weehours.net with web interface capabilities.
+A modern TypeScript-based MUD client for zeehours.net with web interface capabilities.
 
 ## Phase 1: CLI Client (COMPLETED)
 
@@ -8,7 +8,7 @@ The CLI client provides basic telnet connection to the MUD with database logging
 
 ### Features
 
-- ✅ Telnet connection to weehours.net:2000
+- ✅ Telnet connection to zeehours.net:2000
 - ✅ Auto-login with credentials
 - ✅ Real-time console output
 - ✅ User input handling

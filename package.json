@@ -1,7 +1,7 @@
 {
-  "name": "weehours-pub",
+  "name": "zeehours-pub",
   "version": "1.0.0",
-  "description": "MUD client for weehours.net with web interface",
+  "description": "MUD client for zeehours.net with web interface",
   "main": "dist/cli/index.js",
   "scripts": {
     "build": "tsc --build tsconfig.server.json",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
