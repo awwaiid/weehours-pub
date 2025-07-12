@@ -1,0 +1,35 @@
+{
+  "name": "weehours-pub",
+  "version": "1.0.0",
+  "description": "MUD client for weehours.net with web interface",
+  "main": "dist/cli/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "keywords": ["mud", "telnet", "client", "web"],
+  "author": "awwaiid",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0",
+    "sqlite3": "^5.1.7",
+    "telnet-client": "^2.2.5",
+    "ansi-to-html": "^0.7.2",
+    "readline": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
+    "@types/sqlite3": "^3.1.11",
+    "typescript": "^5.4.5",
+    "ts-node": "^10.9.2",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "eslint": "^8.57.0"
+  }
+}

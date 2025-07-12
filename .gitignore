@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.env
+*.db
+*.sqlite
+.DS_Store
+.vscode/
+.idea/
+coverage/
+*.tgz
+*.tar.gz
