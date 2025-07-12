@@ -44,3 +44,64 @@ Next.js app ready
  GET / 200 in 22ms
  GET / 200 in 20ms
  GET / 200 in 49ms
+ ✓ Compiled in 299ms (323 modules)
+ ✓ Compiled in 256ms (323 modules)
+ GET / 200 in 235ms
+ GET / 200 in 239ms
+ GET / 200 in 54ms
+ GET / 200 in 48ms
+ ✓ Compiled in 264ms (323 modules)
+ GET / 200 in 141ms
+ GET / 200 in 140ms
+ ✓ Compiled in 150ms (323 modules)
+ GET / 200 in 29ms
+ GET / 200 in 29ms
+ ✓ Compiled in 721ms (683 modules)
+ GET / 200 in 707ms
+ GET / 200 in 710ms
+ ✓ Compiled in 339ms (683 modules)
+ GET / 200 in 564ms
+ GET / 200 in 566ms
+ ✓ Compiled in 354ms (687 modules)
+ GET / 200 in 613ms
+ GET / 200 in 616ms
+ ✓ Compiled in 183ms (325 modules)
+ ✓ Compiled in 150ms (325 modules)
+ GET / 200 in 142ms
+ GET / 200 in 145ms
+ GET / 200 in 39ms
+ GET / 200 in 37ms
+ ✓ Compiled in 215ms (325 modules)
+ ✓ Compiled in 188ms (325 modules)
+ GET / 200 in 159ms
+ GET / 200 in 159ms
+ GET / 200 in 30ms
+ GET / 200 in 16ms
+ ✓ Compiled in 267ms (325 modules)
+ ✓ Compiled in 266ms (325 modules)
+ GET / 200 in 248ms
+ GET / 200 in 247ms
+ GET / 200 in 44ms
+ GET / 200 in 41ms
+ ✓ Compiled in 572ms (687 modules)
+ GET / 200 in 736ms
+ GET / 200 in 739ms
+ GET / 200 in 75ms
+ GET / 200 in 44ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 740ms (677 modules)
+ GET /api/mud/events?limit=50 404 in 1774ms
+ GET /api/mud/events?limit=50 404 in 1743ms
+ GET / 200 in 1017ms
+ GET / 200 in 1021ms
+ GET /api/mud/events?limit=50 404 in 54ms
+ GET /api/mud/events?limit=50 404 in 48ms
+ GET /api/mud/events?limit=50 404 in 55ms
+ GET /api/mud/events?limit=50 404 in 54ms
+ GET /api/mud/events?limit=50 404 in 91ms
+ GET /api/mud/events?limit=50 404 in 89ms
+ GET / 200 in 75ms
+ GET /api/mud/events?limit=50 404 in 125ms
+ GET /api/mud/events?limit=50 404 in 124ms
+ GET /api/mud/events?limit=50 404 in 32ms
+ GET /api/mud/events?limit=50 404 in 60ms

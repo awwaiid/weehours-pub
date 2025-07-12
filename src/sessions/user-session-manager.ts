@@ -123,6 +123,10 @@ export class UserSessionManager {
     return await this.database.getRecentMessages(sessionId, limit);
   }
 
+  async getRecentEvents(sessionId: string, limit: number = 100): Promise<any[]> {
+    return await this.database.getRecentEvents(sessionId, limit);
+  }
+
   async cleanupExpiredSessions(): Promise<void> {
     // Disconnect MUD connections for expired sessions
     const expiredSessions = Array.from(this.activeConnections.keys());

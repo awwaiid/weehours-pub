@@ -98,4 +98,57 @@
   .mud-status-error {
     color: #ef4444;
   }
+
+  /* View Toggle Styles */
+  .bg-mud-light {
+    background-color: var(--color-mud-light);
+  }
+  
+  .border-mud-green {
+    border-color: var(--color-mud-green);
+  }
+  
+  .text-mud-green {
+    color: var(--color-mud-green);
+  }
+  
+  .text-mud-cyan {
+    color: var(--color-mud-cyan);
+  }
+  
+  .text-mud-yellow {
+    color: var(--color-mud-yellow);
+  }
+  
+  .bg-mud-green {
+    background-color: var(--color-mud-green);
+  }
+  
+  .bg-mud-dark {
+    background-color: var(--color-mud-dark);
+  }
+  
+  .text-black {
+    color: #000000;
+  }
+  
+  .text-white {
+    color: #ffffff;
+  }
+  
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+  
+  .text-gray-300 {
+    color: #d1d5db;
+  }
+  
+  .text-red-400 {
+    color: #f87171;
+  }
+  
+  .hover\:bg-mud-dark:hover {
+    background-color: var(--color-mud-dark);
+  }
 }

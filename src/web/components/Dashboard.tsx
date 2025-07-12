@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import MudTerminal from './MudTerminal';
 import CommandInput from './CommandInput';
 import StatusBar from './StatusBar';
+import ViewToggle from './ViewToggle';
+import ChatView from './ChatView';
 
 interface User {
   sessionId: string
@@ -44,6 +46,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     messageCount: 0
   });
   const [isConnecting, setIsConnecting] = useState(false);
+  const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('terminal');
 
   useEffect(() => {
     // Initial data load
@@ -205,7 +208,21 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Terminal - Takes most space */}
         <div className="lg:col-span-3">
-          <MudTerminal messages={messages} />
+          {/* View Toggle */}
+          <div className="mb-4">
+            <ViewToggle 
+              currentView={currentView} 
+              onViewChange={setCurrentView}
+            />
+          </div>
+          
+          {/* Terminal or Chat View */}
+          {currentView === 'terminal' ? (
+            <MudTerminal messages={messages} />
+          ) : (
+            <ChatView sessionId={user.sessionId} />
+          )}
+          
           <div className="mt-4">
             <CommandInput
               onSendCommand={handleSendCommand}

@@ -286,6 +286,23 @@ export class WebServer {
       }
     });
 
+    // Get recent parsed events
+    this.app.get('/api/mud/events', async (req, res) => {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      try {
+        const limit = parseInt(req.query.limit as string) || 100;
+        const events = await this.sessionManager.getRecentEvents(user.sessionId, limit);
+        res.json({ events });
+      } catch (error) {
+        console.error('Events fetch error:', error);
+        res.status(500).json({ error: 'Failed to fetch events' });
+      }
+    });
+
     // Handle Next.js routes (must be last)
     const handle = this.nextApp.getRequestHandler();
     this.app.all('*', (req, res) => {

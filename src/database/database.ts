@@ -189,6 +189,26 @@ export class Database {
     }
   }
 
+  async getRecentEvents(userSessionId: string, limit: number = 100): Promise<any[]> {
+    const sql = `
+      SELECT * FROM parsed_events 
+      WHERE user_session_id = ?
+      ORDER BY timestamp DESC 
+      LIMIT ?
+    `;
+    
+    try {
+      const result = await this.allAsync(sql, [userSessionId, limit]);
+      return result.map((row: any) => ({
+        ...row,
+        data: typeof row.data === 'string' ? JSON.parse(row.data) : row.data
+      }));
+    } catch (error) {
+      console.error('Failed to get recent events:', error);
+      return [];
+    }
+  }
+
   async updateMudConnectionStatus(sessionId: string, connected: boolean, status: string): Promise<void> {
     const sql = 'UPDATE user_sessions SET mud_connected = ?, connection_status = ?, last_activity = datetime("now") WHERE id = ?';
     
