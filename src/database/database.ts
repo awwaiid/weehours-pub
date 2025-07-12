@@ -15,7 +15,7 @@ export class Database {
   private db: sqlite3.Database;
   private runAsync: (sql: string, params?: any[]) => Promise<sqlite3.RunResult>;
   private getAsync: (sql: string, params?: any[]) => Promise<any>;
-  private allAsync: (sql: string, params?: any[]) => Promise<any[]>;
+  public allAsync: (sql: string, params?: any[]) => Promise<any[]>;
 
   constructor(private dbPath: string = './weehours.db') {
     this.db = new sqlite3.Database(dbPath);
@@ -64,6 +64,24 @@ export class Database {
       ]);
     } catch (error) {
       console.error('Failed to log message:', error);
+    }
+  }
+
+  async logParsedEvent(event: any): Promise<void> {
+    const sql = `
+      INSERT INTO parsed_events (session_id, event_type, data, timestamp)
+      VALUES (?, ?, ?, datetime('now'))
+    `;
+    
+    try {
+      await this.runAsync(sql, [
+        event.session_id,
+        event.event_type,
+        JSON.stringify(event.data)
+      ]);
+    } catch (error) {
+      console.error('Failed to log parsed event:', error);
+      throw error;
     }
   }
 
