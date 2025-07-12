@@ -3,7 +3,7 @@
 import { Database } from './database/database';
 
 async function queryEvents() {
-  const db = new Database();
+  const db = Database.getInstance();
   
   try {
     await db.initialize();

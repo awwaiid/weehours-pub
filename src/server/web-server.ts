@@ -1,11 +1,9 @@
 import express from 'express';
 import http from 'http';
-import WebSocket from 'ws';
 import session, { Session } from 'express-session';
 import cookieParser from 'cookie-parser';
 import next from 'next';
 import { UserSessionManager } from '../sessions/user-session-manager';
-import { ConnectionStatus } from '../sessions/user-mud-connection';
 
 export interface AuthenticatedUser {
   sessionId: string;
@@ -20,9 +18,7 @@ interface CustomSession extends Session {
 export class WebServer {
   private app: express.Application;
   private server: http.Server;
-  private wss: WebSocket.Server;
   private sessionManager: UserSessionManager;
-  private userWebSockets: Map<string, WebSocket> = new Map();
   private port: number;
   private nextApp: any;
 
@@ -30,7 +26,6 @@ export class WebServer {
     this.port = port;
     this.app = express();
     this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
     this.sessionManager = new UserSessionManager();
     
     // Initialize Next.js
@@ -45,7 +40,6 @@ export class WebServer {
     
     this.setupMiddleware();
     this.setupRoutes();
-    this.setupWebSocket();
   }
 
   private setupMiddleware(): void {
@@ -168,8 +162,6 @@ export class WebServer {
       if (user && user.sessionId) {
         // Disconnect MUD connection
         this.sessionManager.disconnectMud(user.sessionId);
-        // Remove WebSocket
-        this.userWebSockets.delete(user.sessionId);
       }
 
       req.session.destroy((err) => {
@@ -204,25 +196,40 @@ export class WebServer {
       }
 
       try {
+        // The MUD connection now only logs to the database.
+        // The client will poll for updates.
         await this.sessionManager.connectMudForUser(
           user.sessionId,
-          (sessionId, message, isOutgoing) => this.handleMudMessage(sessionId, message, isOutgoing),
-          (sessionId, status) => this.handleMudStateChange(sessionId, status)
+          () => {}, // onMessage - no longer needed for real-time push
+          () => {}  // onStateChange - no longer needed for real-time push
         );
 
         res.json({ success: true, message: 'Connected to MUD' });
       } catch (error) {
         console.error('MUD connection error:', error);
         
-        // If user already has an active connection, treat as success and update state
+        // If user already has an active connection, treat as success
         if (error instanceof Error && error.message === 'User already has an active MUD connection') {
-          // Send current connection state to frontend
-          const status = await this.sessionManager.getConnectionStatus(user.sessionId);
-          this.handleMudStateChange(user.sessionId, status);
           res.json({ success: true, message: 'Already connected to MUD' });
         } else {
           res.status(500).json({ error: 'Failed to connect to MUD' });
         }
+      }
+    });
+
+    // Get MUD connection status
+    this.app.get('/api/mud/status', async (req, res) => {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      try {
+        const status = await this.sessionManager.getConnectionStatus(user.sessionId);
+        res.json({ status });
+      } catch (error) {
+        console.error('Status fetch error:', error);
+        res.status(500).json({ error: 'Failed to fetch status' });
       }
     });
 
@@ -286,76 +293,6 @@ export class WebServer {
     });
   }
 
-  private setupWebSocket(): void {
-    this.wss.on('connection', (ws, _req) => {
-      console.log('New WebSocket connection');
-
-      ws.on('message', async (data) => {
-        try {
-          const message = JSON.parse(data.toString());
-          
-          if (message.type === 'authenticate') {
-            // Authenticate WebSocket connection
-            const { sessionId } = message;
-            const userSession = await this.sessionManager.getSession(sessionId);
-            
-            if (userSession) {
-              this.userWebSockets.set(sessionId, ws);
-              ws.send(JSON.stringify({
-                type: 'authenticated',
-                success: true,
-                username: userSession.username
-              }));
-              console.log('WebSocket authenticated for user: ' + userSession.username);
-            } else {
-              ws.send(JSON.stringify({
-                type: 'authenticated',
-                success: false,
-                error: 'Invalid session'
-              }));
-              ws.close();
-            }
-          }
-        } catch (error) {
-          console.error('WebSocket message error:', error);
-        }
-      });
-
-      ws.on('close', () => {
-        // Remove WebSocket from user mappings
-        for (const [sessionId, socket] of this.userWebSockets.entries()) {
-          if (socket === ws) {
-            this.userWebSockets.delete(sessionId);
-            console.log(`WebSocket disconnected for session: ${sessionId}`);
-            break;
-          }
-        }
-      });
-    });
-  }
-
-  private handleMudMessage(sessionId: string, message: string, isOutgoing = false): void {
-    const ws = this.userWebSockets.get(sessionId);
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: 'mud_message',
-        content: message,
-        isOutgoing,
-        timestamp: new Date().toISOString()
-      }));
-    }
-  }
-
-  private handleMudStateChange(sessionId: string, status: ConnectionStatus): void {
-    const ws = this.userWebSockets.get(sessionId);
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: 'mud_status',
-        status
-      }));
-    }
-  }
-
   async start(): Promise<void> {
     await this.sessionManager.initialize();
     await this.nextApp.prepare();
@@ -363,7 +300,6 @@ export class WebServer {
     return new Promise((resolve) => {
       this.server.listen(this.port, () => {
         console.log(`WebServer running on http://localhost:${this.port}`);
-        console.log('WebSocket server ready for connections');
         console.log('Next.js app ready');
         resolve();
       });

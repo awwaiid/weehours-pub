@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import MudTerminal from './MudTerminal';
 import CommandInput from './CommandInput';
 import StatusBar from './StatusBar';
@@ -44,21 +44,34 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     messageCount: 0
   });
   const [isConnecting, setIsConnecting] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Load recent messages
-    loadRecentMessages();
-    
-    // Setup WebSocket connection
-    setupWebSocket();
+    // Initial data load
+    fetchUpdates();
 
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
+    // Poll for updates every 3 seconds
+    const intervalId = setInterval(fetchUpdates, 3000);
+
+    // Cleanup on component unmount
+    return () => clearInterval(intervalId);
   }, [user.sessionId]);
+
+  const fetchUpdates = () => {
+    loadRecentMessages();
+    loadConnectionStatus();
+  };
+
+  const loadConnectionStatus = async () => {
+    try {
+      const response = await fetch('/api/mud/status', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setConnectionStatus(data.status);
+      }
+    } catch (error) {
+      console.error('Failed to load connection status:', error);
+    }
+  };
 
   const loadRecentMessages = async () => {
     try {
@@ -78,53 +91,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     } catch (error) {
       console.error('Failed to load messages:', error);
     }
-  };
-
-  const setupWebSocket = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}`;
-    
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      // Authenticate
-      ws.send(JSON.stringify({
-        type: 'authenticate',
-        sessionId: user.sessionId
-      }));
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      
-      if (data.type === 'authenticated') {
-        if (data.success) {
-          console.log('WebSocket authenticated');
-        } else {
-          console.error('WebSocket authentication failed:', data.error);
-        }
-      } else if (data.type === 'mud_message') {
-        setMessages(prev => [...prev, {
-          content: data.content,
-          isOutgoing: data.isOutgoing,
-          timestamp: data.timestamp
-        }]);
-      } else if (data.type === 'mud_status') {
-        setConnectionStatus(data.status);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      // Try to reconnect after 3 seconds
-      setTimeout(setupWebSocket, 3000);
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
   };
 
   const handleConnect = async () => {

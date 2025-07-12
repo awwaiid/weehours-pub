@@ -59,7 +59,7 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
       
       <div
         ref={terminalRef}
-        className="mud-terminal h-96"
+        className="mud-terminal"
       >
         {messages.length === 0 ? (
           <div className="text-gray-400 italic">

@@ -46,7 +46,6 @@ export class UserMudConnection {
 
     try {
       this.setState('connecting');
-      await this.database.initialize();
       
       // Update database connection status
       await this.database.updateMudConnectionStatus(this.userSession.id, false, 'connecting');
@@ -210,8 +209,6 @@ export class UserMudConnection {
       this.setState('disconnected');
       await this.database.updateMudConnectionStatus(this.userSession.id, false, 'disconnected');
     }
-    
-    await this.database.close();
   }
 
   getStatus(): ConnectionStatus {

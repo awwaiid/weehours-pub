@@ -25,7 +25,7 @@ export class RawMudTelnetClient {
       input: process.stdin,
       output: process.stdout
     });
-    this.database = new Database();
+    this.database = Database.getInstance();
     this.parser = new MessageParser();
   }
 

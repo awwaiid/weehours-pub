@@ -22,7 +22,7 @@ export class MudTelnetClient {
       input: process.stdin,
       output: process.stdout
     });
-    this.database = new Database();
+    this.database = Database.getInstance();
   }
 
   async connect(): Promise<void> {
