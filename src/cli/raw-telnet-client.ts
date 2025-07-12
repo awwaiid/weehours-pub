@@ -16,7 +16,6 @@ export class RawMudTelnetClient {
   private isConnected = false;
   private database: Database;
   private parser: MessageParser;
-  private sessionId = 1;
   private loginState = 'waiting'; // 'waiting', 'username', 'password', 'logged_in'
   private messageCounter = 0;
 
@@ -82,9 +81,9 @@ export class RawMudTelnetClient {
       // Auto-login logic
       await this.handleAutoLogin(text);
       
-      // Store raw message
+      // Store raw message (using default session for CLI)
       await this.database.logMessage({
-        session_id: this.sessionId,
+        user_session_id: 'cli-session',
         direction: 'incoming',
         content: text
       });
@@ -93,7 +92,11 @@ export class RawMudTelnetClient {
       try {
         const events = this.parser.parseMessage(this.messageCounter, text, new Date().toISOString());
         for (const event of events) {
-          await this.database.logParsedEvent(event);
+          await this.database.logParsedEvent({
+            user_session_id: 'cli-session',
+            event_type: event.event_type,
+            data: event.data
+          });
           console.log(`[PARSED] ${event.event_type}: ${JSON.stringify(event.data).substring(0, 100)}...`);
         }
       } catch (error) {
@@ -180,24 +183,20 @@ export class RawMudTelnetClient {
       
       // Store raw outgoing message
       await this.database.logMessage({
-        session_id: this.sessionId,
+        user_session_id: 'cli-session',
         direction: 'outgoing',
         content: command
       });
       
       // Create a simple command event
-      const commandEvent = {
-        session_id: this.sessionId,
+      await this.database.logParsedEvent({
+        user_session_id: 'cli-session',
         event_type: 'user_command',
         data: {
           command: command.trim(),
           player: 'Awwaiid'
-        },
-        raw_message_ids: [this.messageCounter + 1],
-        timestamp: new Date().toISOString()
-      };
-      
-      await this.database.logParsedEvent(commandEvent);
+        }
+      });
       console.log(`[PARSED] user_command: ${command}`);
       
     } catch (error) {

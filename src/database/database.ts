@@ -4,11 +4,24 @@ import { CREATE_TABLES_SQL } from './schema';
 
 export interface RawMessage {
   id?: number;
-  session_id: number;
+  user_session_id: string;
   direction: 'incoming' | 'outgoing';
   content: string;
   content_stripped?: string;
   timestamp?: string;
+}
+
+export interface UserSession {
+  id: string;
+  user_id?: string;
+  username?: string;
+  password?: string;
+  created_at?: string;
+  last_activity?: string;
+  expires_at?: string;
+  active?: boolean;
+  mud_connected?: boolean;
+  connection_status?: string;
 }
 
 export class Database {
@@ -51,13 +64,13 @@ export class Database {
 
   async logMessage(message: RawMessage): Promise<void> {
     const sql = `
-      INSERT INTO raw_messages (session_id, direction, content, content_stripped, timestamp)
+      INSERT INTO raw_messages (user_session_id, direction, content, content_stripped, timestamp)
       VALUES (?, ?, ?, ?, datetime('now'))
     `;
     
     try {
       await this.runAsync(sql, [
-        message.session_id,
+        message.user_session_id,
         message.direction,
         message.content,
         message.content_stripped || this.stripAnsi(message.content)
@@ -67,15 +80,15 @@ export class Database {
     }
   }
 
-  async logParsedEvent(event: { session_id: number; event_type: string; data: unknown }): Promise<void> {
+  async logParsedEvent(event: { user_session_id: string; event_type: string; data: unknown }): Promise<void> {
     const sql = `
-      INSERT INTO parsed_events (session_id, event_type, data, timestamp)
+      INSERT INTO parsed_events (user_session_id, event_type, data, timestamp)
       VALUES (?, ?, ?, datetime('now'))
     `;
     
     try {
       await this.runAsync(sql, [
-        event.session_id,
+        event.user_session_id,
         event.event_type,
         JSON.stringify(event.data)
       ]);
@@ -85,20 +98,84 @@ export class Database {
     }
   }
 
-  async getRecentMessages(sessionId: number = 1, limit: number = 100): Promise<RawMessage[]> {
+  async createUserSession(
+    sessionId: string, 
+    userId?: string, 
+    username?: string, 
+    password?: string, 
+    expiresIn: number = 24 * 60 * 60 * 1000
+  ): Promise<void> {
+    const expiresAt = new Date(Date.now() + expiresIn).toISOString();
+    const sql = `
+      INSERT INTO user_sessions (id, user_id, username, password, expires_at, created_at, last_activity)
+      VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+    `;
+    
+    try {
+      await this.runAsync(sql, [sessionId, userId, username, password, expiresAt]);
+    } catch (error) {
+      console.error('Failed to create user session:', error);
+      throw error;
+    }
+  }
+
+  async getUserSession(sessionId: string): Promise<UserSession | null> {
+    const sql = 'SELECT * FROM user_sessions WHERE id = ? AND active = TRUE AND expires_at > datetime("now")';
+    
+    try {
+      const result = await this.getAsync(sql, [sessionId]) as UserSession;
+      return result || null;
+    } catch (error) {
+      console.error('Failed to get user session:', error);
+      return null;
+    }
+  }
+
+  async updateSessionActivity(sessionId: string): Promise<void> {
+    const sql = 'UPDATE user_sessions SET last_activity = datetime("now") WHERE id = ?';
+    
+    try {
+      await this.runAsync(sql, [sessionId]);
+    } catch (error) {
+      console.error('Failed to update session activity:', error);
+    }
+  }
+
+  async deactivateUserSession(sessionId: string): Promise<void> {
+    const sql = 'UPDATE user_sessions SET active = FALSE WHERE id = ?';
+    
+    try {
+      await this.runAsync(sql, [sessionId]);
+    } catch (error) {
+      console.error('Failed to deactivate user session:', error);
+      throw error;
+    }
+  }
+
+  async getRecentMessages(userSessionId: string, limit: number = 100): Promise<RawMessage[]> {
     const sql = `
       SELECT * FROM raw_messages 
-      WHERE session_id = ? 
+      WHERE user_session_id = ?
       ORDER BY timestamp DESC 
       LIMIT ?
     `;
     
     try {
-      const result = await this.allAsync(sql, [sessionId, limit]);
+      const result = await this.allAsync(sql, [userSessionId, limit]);
       return result as RawMessage[];
     } catch (error) {
       console.error('Failed to get recent messages:', error);
       return [];
+    }
+  }
+
+  async updateMudConnectionStatus(sessionId: string, connected: boolean, status: string): Promise<void> {
+    const sql = 'UPDATE user_sessions SET mud_connected = ?, connection_status = ?, last_activity = datetime("now") WHERE id = ?';
+    
+    try {
+      await this.runAsync(sql, [connected, status, sessionId]);
+    } catch (error) {
+      console.error('Failed to update MUD connection status:', error);
     }
   }
 

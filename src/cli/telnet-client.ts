@@ -94,7 +94,7 @@ export class MudTelnetClient {
       process.stdout.write(text);
       
       await this.database.logMessage({
-        session_id: this.sessionId,
+        user_session_id: 'cli-session',
         direction: 'incoming',
         content: text
       });
@@ -135,7 +135,7 @@ export class MudTelnetClient {
           await this.connection.send(input);
           
           await this.database.logMessage({
-            session_id: this.sessionId,
+            user_session_id: 'cli-session',
             direction: 'outgoing',
             content: input
           });
