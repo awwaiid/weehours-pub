@@ -2,7 +2,7 @@ export interface ParsedEvent {
   id?: number;
   session_id: number;
   event_type: string;
-  data: any;
+  data: Record<string, unknown>;
   raw_message_ids: number[];
   timestamp?: string;
 }
@@ -10,7 +10,7 @@ export interface ParsedEvent {
 export interface MessageParserContext {
   pendingMessages: Array<{id: number, content: string, timestamp: string}>;
   lastEventType?: string;
-  roomContext?: any;
+  roomContext?: Record<string, unknown>;
 }
 
 export class MessageParser {
@@ -41,7 +41,7 @@ export class MessageParser {
     const events: ParsedEvent[] = [];
     
     // Add to pending messages for context
-    this.context.pendingMessages.push({id, content, timestamp});
+    this.context.pendingMessages.push({ id, content, timestamp });
     
     // Clean the content (remove telnet sequences, normalize whitespace)
     const cleanContent = this.cleanContent(content);

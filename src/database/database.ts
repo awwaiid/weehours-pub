@@ -13,9 +13,9 @@ export interface RawMessage {
 
 export class Database {
   private db: sqlite3.Database;
-  private runAsync: (sql: string, params?: any[]) => Promise<sqlite3.RunResult>;
-  private getAsync: (sql: string, params?: any[]) => Promise<any>;
-  public allAsync: (sql: string, params?: any[]) => Promise<any[]>;
+  private runAsync: (sql: string, params?: unknown[]) => Promise<sqlite3.RunResult>;
+  private getAsync: (sql: string, params?: unknown[]) => Promise<unknown>;
+  public allAsync: (sql: string, params?: unknown[]) => Promise<unknown[]>;
 
   constructor(private dbPath: string = './weehours.db') {
     this.db = new sqlite3.Database(dbPath);
@@ -67,7 +67,7 @@ export class Database {
     }
   }
 
-  async logParsedEvent(event: any): Promise<void> {
+  async logParsedEvent(event: { session_id: number; event_type: string; data: unknown }): Promise<void> {
     const sql = `
       INSERT INTO parsed_events (session_id, event_type, data, timestamp)
       VALUES (?, ?, ?, datetime('now'))
@@ -94,7 +94,8 @@ export class Database {
     `;
     
     try {
-      return await this.allAsync(sql, [sessionId, limit]);
+      const result = await this.allAsync(sql, [sessionId, limit]);
+      return result as RawMessage[];
     } catch (error) {
       console.error('Failed to get recent messages:', error);
       return [];
@@ -102,6 +103,7 @@ export class Database {
   }
 
   private stripAnsi(text: string): string {
+    // eslint-disable-next-line no-control-regex
     return text.replace(/\x1b\[[0-9;]*m/g, '');
   }
 

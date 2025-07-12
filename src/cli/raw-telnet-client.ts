@@ -1,6 +1,6 @@
 import * as net from 'net';
 import * as readline from 'readline';
-import { Database, RawMessage } from '../database/database';
+import { Database } from '../database/database';
 
 export interface MudConnection {
   host: string;
