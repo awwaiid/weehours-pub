@@ -31,7 +31,7 @@ export class UserMudConnection {
     private onStateChange: (sessionId: string, status: ConnectionStatus) => void
   ) {
     this.socket = new net.Socket();
-    this.database = new Database();
+    this.database = Database.getInstance();
     this.parser = new MessageParser();
   }
 
@@ -81,6 +81,7 @@ export class UserMudConnection {
 
   private setupEventHandlers(): void {
     this.socket.on('data', async (data: Buffer) => {
+      console.log(`[${this.userSession.id}] MUD_IN:`, data.toString());
       const text = data.toString();
       this.messageCounter++;
       this.lastActivity = new Date();
@@ -170,6 +171,7 @@ export class UserMudConnection {
     }
 
     try {
+      console.log(`[${this.userSession.id}] MUD_OUT:`, command);
       this.socket.write(command + '\n');
       this.lastActivity = new Date();
       

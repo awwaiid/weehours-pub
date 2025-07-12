@@ -69,12 +69,12 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
           messages.map((message, index) => {
             const formatted = formatMessage(message);
             return (
-              <div
+              <pre
                 key={index}
                 className={`${formatted.className} leading-relaxed`}
               >
                 {formatted.content}
-              </div>
+              </pre>
             );
           })
         )}

@@ -25,17 +25,25 @@ export interface UserSession {
 }
 
 export class Database {
+  private static instance: Database;
   private db: sqlite3.Database;
   private runAsync: (sql: string, params?: unknown[]) => Promise<sqlite3.RunResult>;
   private getAsync: (sql: string, params?: unknown[]) => Promise<unknown>;
   public allAsync: (sql: string, params?: unknown[]) => Promise<unknown[]>;
 
-  constructor(private dbPath: string = './weehours.db') {
+  private constructor(private dbPath: string = './weehours.db') {
     this.db = new sqlite3.Database(dbPath);
     
     this.runAsync = promisify(this.db.run.bind(this.db));
     this.getAsync = promisify(this.db.get.bind(this.db));
     this.allAsync = promisify(this.db.all.bind(this.db));
+  }
+
+  public static getInstance(dbPath?: string): Database {
+    if (!Database.instance) {
+      Database.instance = new Database(dbPath);
+    }
+    return Database.instance;
   }
 
   async initialize(): Promise<void> {

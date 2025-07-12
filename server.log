@@ -2,6 +2,9 @@
 > weehours-pub@1.0.0 web
 > ts-node src/server/index.ts
 
+
+
+--- SERVER RESTARTING AT 2025-07-12T20:01:46.809Z ---
 WeeHours MUD Web Server
 =======================
 Starting on port 3000...
@@ -23,37 +26,10 @@ WebServer running on http://localhost:3000
 WebSocket server ready for connections
 Next.js app ready
  ○ Compiling / ...
- ✓ Compiled / in 2.3s (669 modules)
- GET / 200 in 4899ms
+ ✓ Compiled / in 1475ms (669 modules)
+ GET / 200 in 3418ms
 New WebSocket connection
- GET / 200 in 50ms
-
-> weehours-pub@1.0.0 web
-> ts-node src/server/index.ts
-
-WeeHours MUD Web Server
-=======================
-Starting on port 3000...
-Creating database tables...
-Executing statement 1/4: CREATE TABLE IF NOT EXISTS user_sessions (
-    id ...
-Statement 1 executed successfully
-Executing statement 2/4: CREATE TABLE IF NOT EXISTS raw_messages (
-    id I...
-Statement 2 executed successfully
-Executing statement 3/4: CREATE TABLE IF NOT EXISTS parsed_events (
-    id ...
-Statement 3 executed successfully
-Executing statement 4/4: CREATE TABLE IF NOT EXISTS chat_messages (
-    id ...
-Statement 4 executed successfully
-Database initialized successfully
-WebServer running on http://localhost:3000
-WebSocket server ready for connections
-Next.js app ready
- ○ Compiling / ...
- ✓ Compiled / in 1684ms (669 modules)
- GET / 200 in 3832ms
+New WebSocket connection
 New WebSocket connection
 New WebSocket connection
 New WebSocket connection
@@ -83,6 +59,51 @@ Executing statement 4/4: CREATE TABLE IF NOT EXISTS chat_messages (
     id ...
 Statement 4 executed successfully
 Database initialized successfully
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN:                   *                              +               (          )
+                                                               (    ()      
+                              *                               ( ()            
+      *                                                       (()    ()        )
+                       +                                     ()  ()            
+               *                                              (()   ()         ) 
+                                    *                         ( () ()  
+                                                               (  () ()       )
+                                                                (   ()      
+        +                   EEEEEEEEEEE  \                        (    O  )
+                          EE           EE  \            +
+                         E               E  \
+             +           E                 E  \                      +
+                       EE      here        E |
+      
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN:                  EE                  E/ 
+                      EE       lies       E \             +
+   +                  E                   EE |
+                      EE      M  U  D      E |
+                      EE                  EE |                          .
+        .              E         #        E  |         .
+                       E       #####      E  |                  .
+                      EE         #        EE |
+               .      E          #         E |             .
+    .                 EE         #        EE |
+                       EE                 EE |                       .
+                      EE                   E |                  
+,,,,,,,,,,,,,,,,,,,,,,E,,   ,   ,      ,,,,E,|,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//////////////////////E/ ,///,///,/,///////E///////////////////////////////////
+//////////////////////E,///////////////////E///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
++ + +  WEEHOURS LPMUD + + LOGIN AS guest TO VISIT + + HTTP://WEEHOURS.NET + + +
+
+What is your name: 
+New WebSocket connection
+New WebSocket connection
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_OUT: awwaiid
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: ��
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: Password: 
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_OUT: ***REMOVED***
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: 
+[Awwaiid has entered the game.]
+Throwing out the other copy.
+
+[f3508a60a4d36b019e7c28f14f721df1ee18fbfe714e43de096b00f397c6759b] MUD_IN: ��> 
 New WebSocket connection
 New WebSocket connection
 New WebSocket connection
@@ -90,6 +111,68 @@ New WebSocket connection
 New WebSocket connection
 New WebSocket connection
 New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+ ✓ Compiled in 190ms (309 modules)
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+ ✓ Compiled / in 178ms (360 modules)
+ GET / 200 in 843ms
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+New WebSocket connection
+MUD connection error: Error: User already has an active MUD connection
+    at UserSessionManager.connectMudForUser (src/sessions/user-session-manager.ts:51:19)
+    at async (src/server/web-server.ts:153:17)
 New WebSocket connection
 New WebSocket connection
 New WebSocket connection

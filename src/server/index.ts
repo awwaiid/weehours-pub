@@ -3,7 +3,11 @@
 import { WebServer } from './web-server';
 
 async function main() {
+  console.log(`
+
+--- SERVER RESTARTING AT ${new Date().toISOString()} ---`);
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+
   
   console.log('WeeHours MUD Web Server');
   console.log('=======================');

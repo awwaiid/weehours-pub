@@ -7,7 +7,7 @@ export class UserSessionManager {
   private activeConnections: Map<string, UserMudConnection> = new Map();
 
   constructor() {
-    this.database = new Database();
+    this.database = Database.getInstance();
   }
 
   async initialize(): Promise<void> {
