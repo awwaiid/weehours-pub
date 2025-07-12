@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 interface ConnectionStatus {
   state: string
@@ -15,50 +15,50 @@ export default function StatusBar({ status }: StatusBarProps) {
   const getStatusColor = (state: string) => {
     switch (state) {
       case 'connected':
-        return 'mud-status-connected'
+        return 'mud-status-connected';
       case 'connecting':
       case 'login':
-        return 'mud-status-connecting'
+        return 'mud-status-connecting';
       case 'error':
-        return 'mud-status-error'
+        return 'mud-status-error';
       default:
-        return 'mud-status-disconnected'
+        return 'mud-status-disconnected';
     }
-  }
+  };
 
   const getStatusIcon = (state: string) => {
     switch (state) {
       case 'connected':
-        return '●'
+        return '●';
       case 'connecting':
       case 'login':
-        return '◐'
+        return '◐';
       case 'error':
-        return '✕'
+        return '✕';
       default:
-        return '○'
+        return '○';
     }
-  }
+  };
 
   const getStatusMessage = () => {
     if (status.state === 'connected') {
-      return 'Connected to WeeHours MUD'
+      return 'Connected to WeeHours MUD';
     } else if (status.state === 'connecting') {
-      return 'Establishing connection...'
+      return 'Establishing connection...';
     } else if (status.state === 'login') {
       if (status.loginState === 'username') {
-        return 'Sending username...'
+        return 'Sending username...';
       } else if (status.loginState === 'password') {
-        return 'Authenticating...'
+        return 'Authenticating...';
       } else {
-        return 'Logging in...'
+        return 'Logging in...';
       }
     } else if (status.state === 'error') {
-      return 'Connection error'
+      return 'Connection error';
     } else {
-      return 'Not connected'
+      return 'Not connected';
     }
-  }
+  };
 
   return (
     <div className="mud-card">
@@ -87,5 +87,5 @@ export default function StatusBar({ status }: StatusBarProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

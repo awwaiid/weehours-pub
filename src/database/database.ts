@@ -131,6 +131,18 @@ export class Database {
     }
   }
 
+  async getUserSessionByUsername(username: string): Promise<UserSession | null> {
+    const sql = 'SELECT * FROM user_sessions WHERE username = ? AND active = TRUE AND expires_at > datetime("now") ORDER BY last_activity DESC LIMIT 1';
+    
+    try {
+      const result = await this.getAsync(sql, [username]) as UserSession;
+      return result || null;
+    } catch (error) {
+      console.error('Failed to get user session by username:', error);
+      return null;
+    }
+  }
+
   async updateSessionActivity(sessionId: string): Promise<void> {
     const sql = 'UPDATE user_sessions SET last_activity = datetime("now") WHERE id = ?';
     

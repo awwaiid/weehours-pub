@@ -1,14 +1,20 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import MudTerminal from './MudTerminal'
-import CommandInput from './CommandInput'
-import StatusBar from './StatusBar'
+import { useState, useEffect, useRef } from 'react';
+import MudTerminal from './MudTerminal';
+import CommandInput from './CommandInput';
+import StatusBar from './StatusBar';
 
 interface User {
   sessionId: string
   username: string
   userId?: string
+}
+
+interface RawMudMessage {
+  content: string;
+  direction: 'incoming' | 'outgoing';
+  timestamp: string;
 }
 
 interface DashboardProps {
@@ -30,163 +36,163 @@ interface ConnectionStatus {
 }
 
 export default function Dashboard({ user, onLogout }: DashboardProps) {
-  const [messages, setMessages] = useState<MudMessage[]>([])
+  const [messages, setMessages] = useState<MudMessage[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     state: 'disconnected',
     loginState: 'waiting',
     isConnected: false,
     messageCount: 0
-  })
-  const [isConnecting, setIsConnecting] = useState(false)
-  const wsRef = useRef<WebSocket | null>(null)
+  });
+  const [isConnecting, setIsConnecting] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     // Load recent messages
-    loadRecentMessages()
+    loadRecentMessages();
     
     // Setup WebSocket connection
-    setupWebSocket()
+    setupWebSocket();
 
     return () => {
       if (wsRef.current) {
-        wsRef.current.close()
+        wsRef.current.close();
       }
-    }
-  }, [user.sessionId])
+    };
+  }, [user.sessionId]);
 
   const loadRecentMessages = async () => {
     try {
       const response = await fetch('/api/mud/messages?limit=50', {
         credentials: 'include'
-      })
+      });
       
       if (response.ok) {
-        const data = await response.json()
-        const formattedMessages = data.messages.map((msg: any) => ({
+        const data = await response.json();
+        const formattedMessages = data.messages.map((msg: RawMudMessage) => ({
           content: msg.content,
           isOutgoing: msg.direction === 'outgoing',
           timestamp: msg.timestamp
-        }))
-        setMessages(formattedMessages.reverse())
+        }));
+        setMessages(formattedMessages.reverse());
       }
     } catch (error) {
-      console.error('Failed to load messages:', error)
+      console.error('Failed to load messages:', error);
     }
-  }
+  };
 
   const setupWebSocket = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsUrl = `${protocol}//${window.location.host}`
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
     
-    const ws = new WebSocket(wsUrl)
-    wsRef.current = ws
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log('WebSocket connected')
+      console.log('WebSocket connected');
       // Authenticate
       ws.send(JSON.stringify({
         type: 'authenticate',
         sessionId: user.sessionId
-      }))
-    }
+      }));
+    };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
+      const data = JSON.parse(event.data);
       
       if (data.type === 'authenticated') {
         if (data.success) {
-          console.log('WebSocket authenticated')
+          console.log('WebSocket authenticated');
         } else {
-          console.error('WebSocket authentication failed:', data.error)
+          console.error('WebSocket authentication failed:', data.error);
         }
       } else if (data.type === 'mud_message') {
         setMessages(prev => [...prev, {
           content: data.content,
           isOutgoing: data.isOutgoing,
           timestamp: data.timestamp
-        }])
+        }]);
       } else if (data.type === 'mud_status') {
-        setConnectionStatus(data.status)
+        setConnectionStatus(data.status);
       }
-    }
+    };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected')
+      console.log('WebSocket disconnected');
       // Try to reconnect after 3 seconds
-      setTimeout(setupWebSocket, 3000)
-    }
+      setTimeout(setupWebSocket, 3000);
+    };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-  }
+      console.error('WebSocket error:', error);
+    };
+  };
 
   const handleConnect = async () => {
-    setIsConnecting(true)
+    setIsConnecting(true);
     try {
       const response = await fetch('/api/mud/connect', {
         method: 'POST',
         credentials: 'include'
-      })
+      });
       
       if (!response.ok) {
-        const data = await response.json()
-        alert(data.error || 'Failed to connect to MUD')
+        const data = await response.json();
+        alert(data.error || 'Failed to connect to MUD');
       }
     } catch (error) {
-      alert('Network error while connecting to MUD')
+      alert('Network error while connecting to MUD');
     } finally {
-      setIsConnecting(false)
+      setIsConnecting(false);
     }
-  }
+  };
 
   const handleDisconnect = async () => {
     try {
       const response = await fetch('/api/mud/disconnect', {
         method: 'POST',
         credentials: 'include'
-      })
+      });
       
       if (!response.ok) {
-        const data = await response.json()
-        alert(data.error || 'Failed to disconnect from MUD')
+        const data = await response.json();
+        alert(data.error || 'Failed to disconnect from MUD');
       }
     } catch (error) {
-      alert('Network error while disconnecting from MUD')
+      alert('Network error while disconnecting from MUD');
     }
-  }
+  };
 
   const handleSendCommand = async (command: string) => {
     try {
       const response = await fetch('/api/mud/command', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         credentials: 'include',
         body: JSON.stringify({ command })
-      })
+      });
       
       if (!response.ok) {
-        const data = await response.json()
-        console.error('Failed to send command:', data.error)
+        const data = await response.json();
+        console.error('Failed to send command:', data.error);
       }
     } catch (error) {
-      console.error('Network error while sending command:', error)
+      console.error('Network error while sending command:', error);
     }
-  }
+  };
 
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
-      })
+      });
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('Logout error:', error);
     }
-    onLogout()
-  }
+    onLogout();
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -301,5 +307,5 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

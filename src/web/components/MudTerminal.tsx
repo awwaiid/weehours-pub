@@ -1,11 +1,10 @@
-'use client'
+'use client';
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
 interface MudMessage {
-  content: string
-  isOutgoing: boolean
-  timestamp: string
+  content: string;
+  isOutgoing: boolean;
 }
 
 interface MudTerminalProps {
@@ -13,40 +12,39 @@ interface MudTerminalProps {
 }
 
 export default function MudTerminal({ messages }: MudTerminalProps) {
-  const terminalRef = useRef<HTMLDivElement>(null)
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Auto-scroll to bottom when new messages arrive
     if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   const formatMessage = (message: MudMessage) => {
-    const timestamp = new Date(message.timestamp).toLocaleTimeString()
     
     if (message.isOutgoing) {
       return {
         content: `> ${message.content}`,
         className: 'text-mud-cyan'
-      }
+      };
     }
     
     // Basic ANSI color handling - could be expanded
-    let content = message.content
-    let className = 'text-mud-green'
+    let content = message.content;
+    let className = 'text-mud-green';
     
     // Simple color detection for common MUD patterns
     if (content.includes('says') || content.includes('tells you')) {
-      className = 'text-mud-yellow'
+      className = 'text-mud-yellow';
     } else if (content.includes('You are in') || content.includes('obvious exits')) {
-      className = 'text-white'
+      className = 'text-white';
     } else if (content.includes('HP:') || content.includes('SP:')) {
-      className = 'text-mud-cyan'
+      className = 'text-mud-cyan';
     }
     
-    return { content, className }
-  }
+    return { content, className };
+  };
 
   return (
     <div className="mud-card">
@@ -69,7 +67,7 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
           </div>
         ) : (
           messages.map((message, index) => {
-            const formatted = formatMessage(message)
+            const formatted = formatMessage(message);
             return (
               <div
                 key={index}
@@ -77,10 +75,10 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
               >
                 {formatted.content}
               </div>
-            )
+            );
           })
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,10 +1,8 @@
 import express from 'express';
 import http from 'http';
 import WebSocket from 'ws';
-import session from 'express-session';
+import session, { Session } from 'express-session';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import * as bcrypt from 'bcryptjs';
 import next from 'next';
 import { UserSessionManager } from '../sessions/user-session-manager';
 import { ConnectionStatus } from '../sessions/user-mud-connection';
@@ -13,6 +11,10 @@ export interface AuthenticatedUser {
   sessionId: string;
   userId?: string;
   username: string;
+}
+
+interface CustomSession extends Session {
+  user?: Partial<AuthenticatedUser>;
 }
 
 export class WebServer {
@@ -71,8 +73,8 @@ export class WebServer {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
-    // User registration
-    this.app.post('/api/auth/register', async (req, res) => {
+    // Unified authentication - connect to existing session or create new one
+    this.app.post('/api/auth/connect', async (req, res) => {
       try {
         const { userId, username, password } = req.body;
 
@@ -80,16 +82,29 @@ export class WebServer {
           return res.status(400).json({ error: 'Username and password are required' });
         }
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Try to find existing session by username
+        let userSession = await this.sessionManager.getSessionByUsername(username);
+        let sessionId: string;
+        let isNewSession = false;
 
-        // Create user session
-        const sessionId = await this.sessionManager.createSession(userId, username, hashedPassword);
+        if (userSession) {
+          // Existing session found - verify password (plaintext comparison)
+          if (password !== userSession.password) {
+            return res.status(401).json({ error: 'Invalid password' });
+          }
+          
+          sessionId = userSession.id;
+        } else {
+          // No existing session - create new one (store plaintext password)
+          sessionId = await this.sessionManager.createSession(userId, username, password);
+          userSession = await this.sessionManager.getSession(sessionId);
+          isNewSession = true;
+        }
 
         // Store session info
-        (req.session as any).user = {
+        (req.session as CustomSession).user = {
           sessionId,
-          userId,
+          userId: userSession?.user_id ?? userId,
           username
         };
 
@@ -97,12 +112,12 @@ export class WebServer {
           success: true, 
           sessionId,
           username,
-          message: 'User registered successfully' 
+          message: isNewSession ? 'New session created successfully' : 'Connected to existing session'
         });
 
       } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ error: 'Registration failed' });
+        console.error('Authentication error:', error);
+        res.status(500).json({ error: 'Authentication failed' });
       }
     });
 
@@ -122,13 +137,13 @@ export class WebServer {
         }
 
         // Verify password
-        const passwordMatch = await bcrypt.compare(password, userSession.password || '');
+        const passwordMatch = password === userSession.password;
         if (!passwordMatch) {
           return res.status(401).json({ error: 'Invalid password' });
         }
 
         // Store session info
-        (req.session as any).user = {
+        (req.session as CustomSession).user = {
           sessionId: userSession.id,
           userId: userSession.user_id,
           username: userSession.username
@@ -149,8 +164,8 @@ export class WebServer {
 
     // Logout
     this.app.post('/api/auth/logout', (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (user) {
+      const user = (req.session as CustomSession).user;
+      if (user && user.sessionId) {
         // Disconnect MUD connection
         this.sessionManager.disconnectMud(user.sessionId);
         // Remove WebSocket
@@ -169,8 +184,8 @@ export class WebServer {
 
     // Get current user info
     this.app.get('/api/auth/user', (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (!user) {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
@@ -183,8 +198,8 @@ export class WebServer {
 
     // MUD connection management
     this.app.post('/api/mud/connect', async (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (!user) {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
@@ -198,13 +213,22 @@ export class WebServer {
         res.json({ success: true, message: 'Connected to MUD' });
       } catch (error) {
         console.error('MUD connection error:', error);
-        res.status(500).json({ error: 'Failed to connect to MUD' });
+        
+        // If user already has an active connection, treat as success and update state
+        if (error instanceof Error && error.message === 'User already has an active MUD connection') {
+          // Send current connection state to frontend
+          const status = await this.sessionManager.getConnectionStatus(user.sessionId);
+          this.handleMudStateChange(user.sessionId, status);
+          res.json({ success: true, message: 'Already connected to MUD' });
+        } else {
+          res.status(500).json({ error: 'Failed to connect to MUD' });
+        }
       }
     });
 
     this.app.post('/api/mud/disconnect', async (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (!user) {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
@@ -219,8 +243,8 @@ export class WebServer {
 
     // Send command to MUD
     this.app.post('/api/mud/command', async (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (!user) {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
@@ -240,8 +264,8 @@ export class WebServer {
 
     // Get recent messages
     this.app.get('/api/mud/messages', async (req, res) => {
-      const user = (req.session as any).user as AuthenticatedUser;
-      if (!user) {
+      const user = (req.session as CustomSession).user;
+      if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 

@@ -4,14 +4,14 @@
 A modern TypeScript-based MUD client for weehours.net with real-time message parsing and web interface capabilities. The project captures telnet MUD sessions, parses them into structured JSON events, and will provide a mobile-friendly web interface for chat-focused interaction.
 
 ## Current Status: Phase 3 Complete ✅
-**Web Interface with Multi-User Support** - Full-featured web client with individual MUD connections per user
+**Single-Service Web Application** - Unified Express server serving both API and Next.js frontend with multi-user MUD connections
 
 ## Project Structure
 ```
 weehours-pub/
 ├── src/
 │   ├── cli/                    # Phase 1: CLI client (COMPLETE)
-│   │   ├── index.ts           # Main entry point
+│   │   ├── index.ts           # Main entry point for CLI
 │   │   ├── raw-telnet-client.ts # Raw socket telnet client with real-time parsing
 │   │   └── telnet-client.ts   # Original telnet-client library attempt (backup)
 │   ├── parser/                # Phase 2: Message parsing (COMPLETE)
@@ -23,17 +23,23 @@ weehours-pub/
 │   │   ├── user-session-manager.ts # Web user session handling and coordination
 │   │   └── user-mud-connection.ts  # Individual user MUD connections
 │   ├── server/                # Phase 3: Web server (COMPLETE)
-│   │   ├── index.ts             # Server entry point
-│   │   └── web-server.ts        # Express.js server with WebSocket support
+│   │   ├── index.ts             # Web server entry point
+│   │   └── web-server.ts        # Express + Next.js integration with WebSocket
 │   └── query-events.ts        # CLI tool for querying parsed events
-├── frontend/                  # Phase 3: Next.js app (COMPLETE)
-│   ├── app/                     # Next.js app directory
-│   ├── components/              # React components
-│   └── styles/                  # CSS and Tailwind styles
-├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript config (CommonJS for dev)
-├── .eslintrc.js              # ESLint v8 config (150 chars, semicolons, single quotes)
-└── README.md                  # Basic project info
+├── src/web/                   # Phase 3: Next.js frontend (COMPLETE)
+│   ├── app/                     # Next.js app directory (layout, pages)
+│   ├── components/              # React components (AuthForm, Dashboard, etc.)
+│   └── styles/                  # Tailwind CSS and global styles
+├── package.json               # All dependencies (backend + frontend)
+├── tsconfig.json              # Main TypeScript config with JSX support
+├── tsconfig.server.json       # Server-only TypeScript build config
+├── next.config.js             # Next.js configuration
+├── tailwind.config.js         # Tailwind CSS configuration
+├── postcss.config.js          # PostCSS configuration
+├── .eslintrc.js              # ESLint v8 config
+├── .gitignore                # Includes Next.js specific ignores
+├── README-WEBAPP.md          # Web app usage instructions
+└── CLAUDE.md                 # This development context file
 ```
 
 ## Technology Stack
@@ -187,12 +193,13 @@ npm run query recent 5  # Show recent events
 ## Project Complete! 🎉
 
 **The WeeHours MUD Web Client is now fully functional with:**
-- Multi-user support (each user gets their own MUD connection)
-- Real-time web interface with WebSocket communication
-- Secure user authentication with MUD credential storage
-- Mobile-responsive design optimized for chat interaction
-- Complete message parsing and database storage
-- Command history, tab completion, and status indicators
+- **Single-Service Architecture**: Express server serves both API and Next.js frontend on one port
+- **Multi-user support**: Each user gets their own MUD connection with isolated data
+- **Real-time web interface**: WebSocket communication for live message streaming
+- **Secure authentication**: User registration/login with MUD credentials
+- **Mobile-responsive design**: Tailwind CSS optimized for chat interaction
+- **Complete message parsing**: Real-time parsing and SQLite database storage
+- **Rich user interface**: Command history, tab completion, status indicators, and quick commands
 
 ## Next Possible Enhancements
 1. **Advanced ANSI Rendering** - Full color and formatting support
@@ -202,9 +209,11 @@ npm run query recent 5  # Show recent events
 5. **Game Features** - Maps, inventories, character sheets
 
 ## Important Considerations
-- All parsing happens in real-time during live MUD sessions
-- Database design already supports multiple sessions via session_id
-- Parser is extensible - easy to add new message type patterns
-- Error handling includes reconnection logic and graceful disconnect
-- Debug output shows both raw telnet data and parsed events
-- Ready to capture chat conversations when other players are active
+- **Single Service**: Web interface and API served from same Express server (port 3000)
+- **Real-time Parsing**: All MUD messages parsed live during user sessions
+- **Data Isolation**: Each user's messages/events stored separately by user_session_id
+- **Extensible Parser**: Easy to add new message type patterns and event types
+- **WebSocket Communication**: Real-time message streaming per user session
+- **Session Management**: Secure session handling with automatic cleanup
+- **Development Ready**: TypeScript, ESLint, and hot-reload for development
+- **Production Ready**: Build process creates optimized static assets

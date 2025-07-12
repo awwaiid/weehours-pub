@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react';
 
 interface CommandInputProps {
   onSendCommand: (command: string) => void
@@ -8,75 +8,75 @@ interface CommandInputProps {
 }
 
 export default function CommandInput({ onSendCommand, disabled = false }: CommandInputProps) {
-  const [command, setCommand] = useState('')
-  const [commandHistory, setCommandHistory] = useState<string[]>([])
-  const [historyIndex, setHistoryIndex] = useState(-1)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [command, setCommand] = useState('');
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Focus input when component mounts or becomes enabled
     if (!disabled && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [disabled])
+  }, [disabled]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    if (!command.trim() || disabled) return
+    if (!command.trim() || disabled) return;
     
     // Add to history
-    setCommandHistory(prev => [...prev, command])
-    setHistoryIndex(-1)
+    setCommandHistory(prev => [...prev, command]);
+    setHistoryIndex(-1);
     
     // Send command
-    onSendCommand(command)
+    onSendCommand(command);
     
     // Clear input
-    setCommand('')
-  }
+    setCommand('');
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowUp') {
-      e.preventDefault()
+      e.preventDefault();
       if (commandHistory.length > 0) {
         const newIndex = historyIndex === -1 
           ? commandHistory.length - 1 
-          : Math.max(0, historyIndex - 1)
-        setHistoryIndex(newIndex)
-        setCommand(commandHistory[newIndex])
+          : Math.max(0, historyIndex - 1);
+        setHistoryIndex(newIndex);
+        setCommand(commandHistory[newIndex]);
       }
     } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
+      e.preventDefault();
       if (historyIndex >= 0) {
-        const newIndex = historyIndex + 1
+        const newIndex = historyIndex + 1;
         if (newIndex >= commandHistory.length) {
-          setHistoryIndex(-1)
-          setCommand('')
+          setHistoryIndex(-1);
+          setCommand('');
         } else {
-          setHistoryIndex(newIndex)
-          setCommand(commandHistory[newIndex])
+          setHistoryIndex(newIndex);
+          setCommand(commandHistory[newIndex]);
         }
       }
     } else if (e.key === 'Tab') {
-      e.preventDefault()
+      e.preventDefault();
       // Basic command completion - could be expanded
       const commonCommands = [
         'look', 'who', 'inventory', 'get', 'drop', 'say', 'tell', 
         'north', 'south', 'east', 'west', 'up', 'down'
-      ]
+      ];
       
-      const partial = command.toLowerCase()
-      const matches = commonCommands.filter(cmd => cmd.startsWith(partial))
+      const partial = command.toLowerCase();
+      const matches = commonCommands.filter(cmd => cmd.startsWith(partial));
       
       if (matches.length === 1) {
-        setCommand(matches[0] + ' ')
+        setCommand(matches[0] + ' ');
       } else if (matches.length > 1) {
         // Show available completions in console for now
-        console.log('Available completions:', matches)
+        console.log('Available completions:', matches);
       }
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex space-x-2">
@@ -89,7 +89,7 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
           onKeyDown={handleKeyDown}
           disabled={disabled}
           className="mud-input"
-          placeholder={disabled ? "Connect to MUD to send commands" : "Enter MUD command..."}
+          placeholder={disabled ? 'Connect to MUD to send commands' : 'Enter MUD command...'}
           autoComplete="off"
         />
         {commandHistory.length > 0 && (
@@ -106,5 +106,5 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
         Send
       </button>
     </form>
-  )
+  );
 }

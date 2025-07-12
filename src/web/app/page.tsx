@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import AuthForm from '../components/AuthForm'
-import Dashboard from '../components/Dashboard'
+import { useState } from 'react';
+import AuthForm from '../components/AuthForm';
+import Dashboard from '../components/Dashboard';
 
 interface User {
   sessionId: string
@@ -11,15 +11,15 @@ interface User {
 }
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(null);
 
   const handleAuth = (userData: User) => {
-    setUser(userData)
-  }
+    setUser(userData);
+  };
 
   const handleLogout = () => {
-    setUser(null)
-  }
+    setUser(null);
+  };
 
   return (
     <main className="min-h-screen bg-mud-dark">
@@ -40,5 +40,5 @@ export default function Home() {
         )}
       </div>
     </main>
-  )
+  );
 }

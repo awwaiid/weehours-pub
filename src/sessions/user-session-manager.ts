@@ -38,6 +38,15 @@ export class UserSessionManager {
     return session;
   }
 
+  async getSessionByUsername(username: string): Promise<UserSession | null> {
+    const session = await this.database.getUserSessionByUsername(username);
+    if (session) {
+      // Update last activity
+      await this.database.updateSessionActivity(session.id);
+    }
+    return session;
+  }
+
   async isValidSession(sessionId: string): Promise<boolean> {
     const session = await this.getSession(sessionId);
     return session !== null;
@@ -94,6 +103,20 @@ export class UserSessionManager {
 
   getActiveConnections(): string[] {
     return Array.from(this.activeConnections.keys());
+  }
+
+  async getConnectionStatus(sessionId: string): Promise<ConnectionStatus> {
+    const connection = this.activeConnections.get(sessionId);
+    if (!connection) {
+      return { 
+        sessionId, 
+        state: 'disconnected' as const, 
+        loginState: 'waiting' as const, 
+        isConnected: false,
+        messageCount: 0 
+      };
+    }
+    return connection.getStatus();
   }
 
   async getRecentMessages(sessionId: string, limit: number = 100): Promise<RawMessage[]> {

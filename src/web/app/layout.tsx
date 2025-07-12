@@ -1,12 +1,12 @@
-import '../styles/globals.css'
+import '../styles/globals.css';
 
 export const metadata = {
   title: 'WeeHours MUD Client',
-  description: 'Web-based client for weehours.net MUD',
-}
+  description: 'Web-based client for weehours.net MUD'
+};
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
@@ -14,5 +14,5 @@ export default function RootLayout({
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }

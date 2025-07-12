@@ -50,7 +50,7 @@ That's it! The web interface and API are served from the same port.
 
 ## Technology Stack
 
-- **Backend**: Express.js, WebSocket, SQLite, bcrypt
+- **Backend**: Express.js, WebSocket, SQLite
 - **Frontend**: Next.js, React, TypeScript, Tailwind CSS
 - **Database**: SQLite with user session isolation
 - **Real-time**: WebSocket for message streaming
