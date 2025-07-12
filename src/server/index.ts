@@ -20,15 +20,45 @@ async function main() {
     
     // Graceful shutdown
     process.on('SIGINT', async () => {
-      console.log('\nShutting down server...');
-      await server.stop();
-      process.exit(0);
+      console.log('\n⏹️  Received SIGINT (Ctrl-C), shutting down server...');
+      
+      // Force exit after 10 seconds if graceful shutdown fails
+      const forceExitTimeout = setTimeout(() => {
+        console.log('⚠️  Forcing exit after 10 seconds...');
+        process.exit(0);
+      }, 10000);
+      
+      try {
+        await server.stop();
+        clearTimeout(forceExitTimeout);
+        console.log('✅ Server stopped gracefully');
+        process.exit(0);
+      } catch (error) {
+        clearTimeout(forceExitTimeout);
+        console.error('❌ Error during shutdown:', error);
+        process.exit(1);
+      }
     });
     
     process.on('SIGTERM', async () => {
-      console.log('\nShutting down server...');
-      await server.stop();
-      process.exit(0);
+      console.log('\n⏹️  Received SIGTERM, shutting down server...');
+      
+      // Force exit after 10 seconds if graceful shutdown fails
+      const forceExitTimeout = setTimeout(() => {
+        console.log('⚠️  Forcing exit after 10 seconds...');
+        process.exit(0);
+      }, 10000);
+      
+      try {
+        await server.stop();
+        clearTimeout(forceExitTimeout);
+        console.log('✅ Server stopped gracefully');
+        process.exit(0);
+      } catch (error) {
+        clearTimeout(forceExitTimeout);
+        console.error('❌ Error during shutdown:', error);
+        process.exit(1);
+      }
     });
     
   } catch (error) {

@@ -228,7 +228,9 @@ export class Database {
     return new Promise((resolve) => {
       this.db.close((err) => {
         if (err) {
-          console.error('Error closing database:', err);
+          console.error('❌ Error closing database:', err);
+        } else {
+          console.log('✅ SQLite database connection closed');
         }
         resolve();
       });

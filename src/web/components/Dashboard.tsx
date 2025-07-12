@@ -10,7 +10,6 @@ import ChatView from './ChatView';
 interface User {
   sessionId: string
   username: string
-  userId?: string
 }
 
 interface RawMudMessage {

@@ -7,7 +7,6 @@ import { UserSessionManager } from '../sessions/user-session-manager';
 
 export interface AuthenticatedUser {
   sessionId: string;
-  userId?: string;
   username: string;
 }
 
@@ -70,7 +69,7 @@ export class WebServer {
     // Unified authentication - connect to existing session or create new one
     this.app.post('/api/auth/connect', async (req, res) => {
       try {
-        const { userId, username, password } = req.body;
+        const { username, password } = req.body;
 
         if (!username || !password) {
           return res.status(400).json({ error: 'Username and password are required' });
@@ -90,7 +89,7 @@ export class WebServer {
           sessionId = userSession.id;
         } else {
           // No existing session - create new one (store plaintext password)
-          sessionId = await this.sessionManager.createSession(userId, username, password);
+          sessionId = await this.sessionManager.createSession(undefined, username, password);
           userSession = await this.sessionManager.getSession(sessionId);
           isNewSession = true;
         }
@@ -98,7 +97,6 @@ export class WebServer {
         // Store session info
         (req.session as CustomSession).user = {
           sessionId,
-          userId: userSession?.user_id ?? userId,
           username
         };
 
@@ -139,7 +137,6 @@ export class WebServer {
         // Store session info
         (req.session as CustomSession).user = {
           sessionId: userSession.id,
-          userId: userSession.user_id,
           username: userSession.username
         };
 
@@ -183,7 +180,6 @@ export class WebServer {
 
       res.json({
         sessionId: user.sessionId,
-        userId: user.userId,
         username: user.username
       });
     });
@@ -324,13 +320,26 @@ export class WebServer {
   }
 
   async stop(): Promise<void> {
-    // Clean up all connections
+    console.log('🔄 Closing session manager...');
     await this.sessionManager.close();
     
-    return new Promise((resolve) => {
-      this.server.close(() => {
-        console.log('WebServer stopped');
+    console.log('🔄 Closing HTTP server...');
+    return new Promise((resolve, reject) => {
+      // Set a timeout in case server.close() hangs
+      const timeout = setTimeout(() => {
+        console.log('⚠️  Server close timeout, forcing exit...');
         resolve();
+      }, 5000);
+
+      this.server.close((error) => {
+        clearTimeout(timeout);
+        if (error) {
+          console.error('❌ Error closing server:', error);
+          reject(error);
+        } else {
+          console.log('✅ HTTP server closed');
+          resolve();
+        }
       });
     });
   }

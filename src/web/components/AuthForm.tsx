@@ -3,20 +3,18 @@
 import { useState } from 'react';
 
 interface AuthFormProps {
-  onAuth: (user: { sessionId: string; username: string; userId?: string }) => void
+  onAuth: (user: { sessionId: string; username: string }) => void
 }
 
 interface FormData {
   username: string
   password: string
-  userId?: string
 }
 
 export default function AuthForm({ onAuth }: AuthFormProps) {
   const [formData, setFormData] = useState<FormData>({
     username: '',
-    password: '',
-    userId: ''
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,7 +26,6 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
 
     try {
       const payload = { 
-        userId: formData.userId, 
         username: formData.username, 
         password: formData.password 
       };
@@ -47,8 +44,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
       if (response.ok) {
         onAuth({
           sessionId: data.sessionId,
-          username: data.username,
-          userId: formData.userId
+          username: data.username
         });
       } else {
         setError(data.error || 'Authentication failed');
@@ -87,20 +83,6 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
             />
           </div>
 
-          <div>
-            <label htmlFor="userId" className="block text-sm text-mud-cyan mb-1">
-              User ID (optional)
-            </label>
-            <input
-              type="text"
-              id="userId"
-              name="userId"
-              value={formData.userId}
-              onChange={handleChange}
-              className="mud-input"
-              placeholder="Optional identifier"
-            />
-          </div>
 
           <div>
             <label htmlFor="password" className="block text-sm text-mud-cyan mb-1">

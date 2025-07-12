@@ -7,7 +7,6 @@ import Dashboard from '../components/Dashboard';
 interface User {
   sessionId: string
   username: string
-  userId?: string
 }
 
 export default function Home() {

@@ -141,11 +141,15 @@ export class UserSessionManager {
   }
 
   async close(): Promise<void> {
+    console.log(`🔄 Closing ${this.activeConnections.size} active MUD connections...`);
     // Disconnect all active MUD connections
     const disconnectPromises = Array.from(this.activeConnections.values()).map(conn => conn.disconnect());
     await Promise.all(disconnectPromises);
     this.activeConnections.clear();
+    console.log('✅ All MUD connections closed');
     
+    console.log('🔄 Closing database...');
     await this.database.close();
+    console.log('✅ Database closed');
   }
 }

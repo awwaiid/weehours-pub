@@ -16,6 +16,7 @@ interface ChatViewProps {
 export default function ChatView({ sessionId }: ChatViewProps) {
   const [events, setEvents] = useState<ParsedEvent[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevEventCountRef = useRef(0);
 
   useEffect(() => {
     loadEvents();
@@ -24,9 +25,11 @@ export default function ChatView({ sessionId }: ChatViewProps) {
   }, [sessionId]);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    // Only scroll if we have new events (count increased)
+    if (events.length > prevEventCountRef.current && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+    prevEventCountRef.current = events.length;
   }, [events]);
 
   const loadEvents = async () => {
@@ -37,7 +40,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
       
       if (response.ok) {
         const data = await response.json();
-        setEvents(data.events || []);
+        setEvents((data.events || []).reverse());
       }
     } catch (error) {
       console.error('Failed to load events:', error);
@@ -62,6 +65,18 @@ export default function ChatView({ sessionId }: ChatViewProps) {
         );
         
       case 'user_command':
+        // Don't render chat commands since they'll be echoed back by the server
+        const command = event.data.command?.toLowerCase() || '';
+        const isChatCommand = command.startsWith('say ') || 
+                             command.startsWith('tell ') || 
+                             command.startsWith('"') ||
+                             command.startsWith("'") ||
+                             /^say$/.test(command);
+        
+        if (isChatCommand) {
+          return null; // Don't render chat commands
+        }
+        
         return (
           <div key={event.id} className="mb-2">
             <span className="text-mud-cyan text-xs">[{time}] </span>
