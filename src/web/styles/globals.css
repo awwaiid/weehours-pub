@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Courier New', monospace;
+  }
+  
+  body {
+    @apply bg-mud-dark text-mud-green;
+  }
+}
+
+@layer components {
+  .mud-terminal {
+    @apply bg-black text-mud-green font-mono text-sm p-4 rounded border border-mud-light;
+    @apply h-96 overflow-y-auto whitespace-pre-wrap;
+  }
+  
+  .mud-input {
+    @apply w-full bg-mud-light text-mud-green border border-mud-green;
+    @apply px-3 py-2 font-mono text-sm rounded focus:outline-none focus:ring-2 focus:ring-mud-cyan;
+  }
+  
+  .mud-button {
+    @apply bg-mud-light hover:bg-mud-green hover:text-black;
+    @apply text-mud-green border border-mud-green px-4 py-2 rounded;
+    @apply font-mono text-sm transition-colors duration-200;
+  }
+  
+  .mud-button:disabled {
+    @apply opacity-50 cursor-not-allowed hover:bg-mud-light hover:text-mud-green;
+  }
+  
+  .mud-card {
+    @apply bg-mud-light border border-mud-green rounded-lg p-6;
+  }
+  
+  .mud-status-connected {
+    @apply text-mud-green;
+  }
+  
+  .mud-status-connecting {
+    @apply text-mud-yellow;
+  }
+  
+  .mud-status-disconnected {
+    @apply text-red-400;
+  }
+  
+  .mud-status-error {
+    @apply text-red-500;
+  }
+}

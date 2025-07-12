@@ -3,8 +3,8 @@
 ## Project Overview
 A modern TypeScript-based MUD client for weehours.net with real-time message parsing and web interface capabilities. The project captures telnet MUD sessions, parses them into structured JSON events, and will provide a mobile-friendly web interface for chat-focused interaction.
 
-## Current Status: Phase 2.5 Complete ✅
-**Multi-User Architecture** - Each user gets their own MUD connection with isolated data storage
+## Current Status: Phase 3 Complete ✅
+**Web Interface with Multi-User Support** - Full-featured web client with individual MUD connections per user
 
 ## Project Structure
 ```
@@ -22,9 +22,14 @@ weehours-pub/
 │   ├── sessions/              # Multi-user session management (COMPLETE)
 │   │   ├── user-session-manager.ts # Web user session handling and coordination
 │   │   └── user-mud-connection.ts  # Individual user MUD connections
-│   ├── server/                # Phase 3: Web server (PENDING)
+│   ├── server/                # Phase 3: Web server (COMPLETE)
+│   │   ├── index.ts             # Server entry point
+│   │   └── web-server.ts        # Express.js server with WebSocket support
 │   └── query-events.ts        # CLI tool for querying parsed events
-├── frontend/                  # Phase 3: Next.js app (PENDING)
+├── frontend/                  # Phase 3: Next.js app (COMPLETE)
+│   ├── app/                     # Next.js app directory
+│   ├── components/              # React components
+│   └── styles/                  # CSS and Tailwind styles
 ├── package.json               # Dependencies and scripts
 ├── tsconfig.json              # TypeScript config (CommonJS for dev)
 ├── .eslintrc.js              # ESLint v8 config (150 chars, semicolons, single quotes)
@@ -49,18 +54,22 @@ chat_messages: id, user_session_id, speaker, message, chat_type, timestamp
 
 ## Key Development Commands
 ```bash
-# Development
+# Web Application (Single Service)
+npm run web          # Start integrated web server (port 3000)
+npm run build        # Build server components
+npm run web:build    # Build and start production server
+npm run lint         # ESLint check
+
+# CLI & Database
 npm run dev          # Start CLI client with real-time parsing
-npm run build        # TypeScript compilation
-npm run lint         # ESLint check (clean)
 npm run query types  # Show parsed event distribution
 npm run query chat   # Show chat messages
 npm run query recent 5  # Show recent events
 
-# Login credentials for MUD
-# Host: weehours.net:2000
-# Username: awwaiid
-# Password: ***REMOVED***
+# Production Usage
+# 1. Start web server: npm run web (port 3000)
+# 2. Visit: http://localhost:3000
+# Single service serves both API and web interface!
 ```
 
 ## Completed Phases
@@ -111,20 +120,21 @@ npm run query recent 5  # Show recent events
 - **Session Coordination** - UserSessionManager orchestrates multiple user connections
 - **MUD Credential Storage** - Secure storage of username/password per user session
 
-### Phase 3: Web Interface (NEXT)
+### Phase 3: Web Interface ✅
 **Goal**: Create mobile-friendly web interface with multi-user support
 
-**Tasks**:
-- Set up Express.js server with user session authentication
-- Create REST endpoints for user registration/login with MUD credentials
-- Implement WebSocket per user for real-time message streaming
-- Set up Next.js with TypeScript and Tailwind CSS
-- Create user-specific dashboard showing their own MUD session
-- Implement ANSI-to-HTML color rendering
-- Add real-time message display via WebSocket (user's own messages only)
-- Create input box for sending commands to user's personal MUD connection
-- Design chat-focused UI for parsed messages per user
-- Add user profile management for changing MUD credentials
+**Completed Features**:
+- **Integrated Single Service** - Express.js serves both API and Next.js frontend on one port
+- **User Registration/Login** - Secure authentication with MUD credential storage
+- **WebSocket Communication** - Real-time message streaming per user session
+- **Next.js Frontend** - Modern React app with TypeScript and Tailwind CSS
+- **Responsive Design** - Mobile-friendly interface with MUD terminal aesthetics
+- **User Dashboard** - Personal MUD session view with connection management
+- **Real-Time Terminal** - Live message display with basic ANSI color support
+- **Command Interface** - Full command input with history and tab completion
+- **Connection Management** - Connect/disconnect controls with status indicators
+- **Session Isolation** - Each user sees only their own MUD messages and data
+- **Simplified Deployment** - Single service architecture for easy hosting
 
 ## Key Files to Understand
 
@@ -174,12 +184,22 @@ npm run query recent 5  # Show recent events
 - Chat messages: "hmm" and longer explanation about the project
 - Ready for testing with live chat when friends join
 
-## Next Session Goals
-1. **Start Phase 3** - Web interface development
-2. **Set up** Express.js server with WebSocket support  
-3. **Create** REST endpoints for session management and message history
-4. **Implement** real-time message streaming via WebSocket
-5. **Begin** Next.js frontend with mobile-responsive design
+## Project Complete! 🎉
+
+**The WeeHours MUD Web Client is now fully functional with:**
+- Multi-user support (each user gets their own MUD connection)
+- Real-time web interface with WebSocket communication
+- Secure user authentication with MUD credential storage
+- Mobile-responsive design optimized for chat interaction
+- Complete message parsing and database storage
+- Command history, tab completion, and status indicators
+
+## Next Possible Enhancements
+1. **Advanced ANSI Rendering** - Full color and formatting support
+2. **User Profile Management** - In-app credential changing
+3. **Chat Rooms** - Multiple character support per user
+4. **Mobile App** - React Native version
+5. **Game Features** - Maps, inventories, character sheets
 
 ## Important Considerations
 - All parsing happens in real-time during live MUD sessions

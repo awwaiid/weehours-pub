@@ -1,0 +1,110 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+
+interface CommandInputProps {
+  onSendCommand: (command: string) => void
+  disabled?: boolean
+}
+
+export default function CommandInput({ onSendCommand, disabled = false }: CommandInputProps) {
+  const [command, setCommand] = useState('')
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Focus input when component mounts or becomes enabled
+    if (!disabled && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [disabled])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!command.trim() || disabled) return
+    
+    // Add to history
+    setCommandHistory(prev => [...prev, command])
+    setHistoryIndex(-1)
+    
+    // Send command
+    onSendCommand(command)
+    
+    // Clear input
+    setCommand('')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      if (commandHistory.length > 0) {
+        const newIndex = historyIndex === -1 
+          ? commandHistory.length - 1 
+          : Math.max(0, historyIndex - 1)
+        setHistoryIndex(newIndex)
+        setCommand(commandHistory[newIndex])
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      if (historyIndex >= 0) {
+        const newIndex = historyIndex + 1
+        if (newIndex >= commandHistory.length) {
+          setHistoryIndex(-1)
+          setCommand('')
+        } else {
+          setHistoryIndex(newIndex)
+          setCommand(commandHistory[newIndex])
+        }
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault()
+      // Basic command completion - could be expanded
+      const commonCommands = [
+        'look', 'who', 'inventory', 'get', 'drop', 'say', 'tell', 
+        'north', 'south', 'east', 'west', 'up', 'down'
+      ]
+      
+      const partial = command.toLowerCase()
+      const matches = commonCommands.filter(cmd => cmd.startsWith(partial))
+      
+      if (matches.length === 1) {
+        setCommand(matches[0] + ' ')
+      } else if (matches.length > 1) {
+        // Show available completions in console for now
+        console.log('Available completions:', matches)
+      }
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex space-x-2">
+      <div className="flex-1 relative">
+        <input
+          ref={inputRef}
+          type="text"
+          value={command}
+          onChange={(e) => setCommand(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          className="mud-input"
+          placeholder={disabled ? "Connect to MUD to send commands" : "Enter MUD command..."}
+          autoComplete="off"
+        />
+        {commandHistory.length > 0 && (
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+            ↑↓ History
+          </div>
+        )}
+      </div>
+      <button
+        type="submit"
+        disabled={disabled || !command.trim()}
+        className="mud-button px-6"
+      >
+        Send
+      </button>
+    </form>
+  )
+}

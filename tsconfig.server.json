@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -14,17 +14,21 @@
     "removeComments": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "jsx": "react-jsx",
     "allowJs": true,
     "incremental": true
   },
   "include": [
-    "src/**/*"
+    "src/cli/**/*",
+    "src/database/**/*",
+    "src/parser/**/*",
+    "src/sessions/**/*",
+    "src/server/**/*",
+    "src/query-events.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
     ".next",
-    "**/*.test.ts"
+    "src/web/**/*"
   ]
 }
