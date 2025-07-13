@@ -16,7 +16,6 @@ interface ChatViewProps {
 export default function ChatView({ sessionId }: ChatViewProps) {
   const [events, setEvents] = useState<ParsedEvent[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const prevEventCountRef = useRef(0);
 
   useEffect(() => {
     loadEvents();
@@ -25,11 +24,10 @@ export default function ChatView({ sessionId }: ChatViewProps) {
   }, [sessionId]);
 
   useEffect(() => {
-    // Only scroll if we have new events (count increased)
-    if (events.length > prevEventCountRef.current && scrollRef.current) {
+    // Always scroll to bottom
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-    prevEventCountRef.current = events.length;
   }, [events]);
 
   const loadEvents = async () => {
@@ -48,7 +46,12 @@ export default function ChatView({ sessionId }: ChatViewProps) {
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString();
+    // If timestamp doesn't have timezone info, treat it as UTC and convert to local
+    const date = timestamp.includes('Z') || timestamp.includes('+') || timestamp.includes('T') 
+      ? new Date(timestamp)
+      : new Date(timestamp + 'Z'); // Add Z to force UTC interpretation, then convert to local
+    
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const renderEvent = (event: ParsedEvent) => {
@@ -161,7 +164,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
   return (
     <div 
       ref={scrollRef}
-      className="h-full overflow-y-auto bg-black text-mud-green border border-mud-bronze rounded"
+      className="h-full min-h-0 overflow-y-auto bg-black text-mud-green border border-mud-bronze rounded"
       style={{ 
         fontFamily: '"Courier New", monospace',
         fontSize: '0.875rem',

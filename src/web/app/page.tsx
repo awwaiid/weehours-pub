@@ -21,7 +21,7 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen bg-mud-dark overflow-hidden">
+    <main className="mobile-viewport bg-mud-dark overflow-hidden">
       {!user ? (
         <div className="container mx-auto px-4 py-8 h-full flex flex-col justify-center">
           <header className="text-center mb-8">

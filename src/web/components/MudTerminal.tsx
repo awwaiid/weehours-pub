@@ -49,7 +49,7 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
   return (
     <div
       ref={terminalRef}
-      className="h-full overflow-y-auto bg-black text-mud-green font-mono text-sm border border-mud-bronze rounded"
+      className="h-full min-h-0 overflow-y-auto bg-black text-mud-green font-mono text-sm border border-mud-bronze rounded"
       style={{ 
         fontFamily: '"Courier New", monospace'
       }}

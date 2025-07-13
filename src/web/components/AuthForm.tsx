@@ -111,7 +111,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
             disabled={isLoading}
             className="w-full mud-button"
           >
-{isLoading ? 'Entering the realm...' : 'Enter the Inn'}
+{isLoading ? 'Entering the realm...' : 'Enter the Pub'}
           </button>
         </form>
 

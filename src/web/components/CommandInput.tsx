@@ -21,6 +21,33 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
     }
   }, [disabled]);
 
+  useEffect(() => {
+    // Keep input focused at all times when not disabled
+    const focusInput = () => {
+      if (!disabled && inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    // Focus on mount
+    focusInput();
+
+    // Re-focus if focus is lost
+    const handleFocusLoss = () => {
+      setTimeout(focusInput, 0);
+    };
+
+    if (inputRef.current) {
+      inputRef.current.addEventListener('blur', handleFocusLoss);
+    }
+
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeEventListener('blur', handleFocusLoss);
+      }
+    };
+  }, [disabled]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -48,6 +75,13 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
     
     // Clear input
     setCommand('');
+    
+    // Refocus input after sending message
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -123,18 +157,13 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
           }
           autoComplete="off"
         />
-        {commandHistory.length > 0 && (
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
-            ↑↓ History
-          </div>
-        )}
       </div>
       <button
         type="submit"
         disabled={disabled || !command.trim()}
-        className="mud-button px-6"
+        className="mud-button px-4"
       >
-        Send
+        ▶
       </button>
     </form>
   );

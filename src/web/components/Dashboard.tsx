@@ -128,7 +128,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="mobile-viewport flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-2 sm:p-4 bg-mud-dark border-b border-mud-bronze">
         <div>
@@ -153,7 +153,7 @@ Logout
 
 
       {/* Main Chat/Terminal Area - Takes remaining space */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {currentView === 'terminal' ? (
           <MudTerminal messages={messages} />
         ) : (
