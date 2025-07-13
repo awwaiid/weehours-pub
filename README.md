@@ -1,58 +1,24 @@
-# WeeHours MUD Client
+# WeeHours Pub Client
 
-A modern TypeScript-based MUD client for weehours.net with web interface capabilities.
+Technically it is a whole-mud client I guess, but I am only optimizing for chatting in the pub.
 
-## Phase 1: CLI Client (COMPLETED)
+## Architecture
 
-The CLI client provides basic telnet connection to the MUD with database logging.
+An express/nextjs app, typescript, that runs on my cloud server. I connect to it with a browser, and the server in turn connects to weehours.net. If I disconnect the browser the connection to weehours persists. I used to do this with the IRC gateway, but wanted something different.
 
-### Features
+The browser uses websockets to the server for push updates.
 
-- ✅ Telnet connection to weehours.net:2000
-- ✅ Auto-login with credentials
-- ✅ Real-time console output
-- ✅ User input handling
-- ✅ SQLite database logging
-- ✅ ANSI code stripping for storage
+Data is stored in a local sqlite.
 
-### Quick Start
+I have it pretty hard-wired to weehours, but will work for other MUDS probably.
 
-```bash
-# Install dependencies
-npm install
+## Deployment
 
-# Build the project
-npm run build
+I have it running on my server behind an nginx-proxy that provides SSL and
+path-routing. It is booted up via docker-compose, like my other services.
 
-# Run the CLI client
-npm run dev
-```
+## TODO
 
-### Database Schema
+* Maybe switch to more machine-friendly API. Or not, it seems to work fine
+* I wish there were ways for me to test this without it being annoying to other pub patrons :)
 
-The SQLite database includes tables for:
-- `sessions` - Session configurations (prepared for multi-session support)
-- `raw_messages` - All incoming/outgoing telnet data with timestamps
-- `parsed_events` - Structured events (future phase)
-- `chat_messages` - Chat-specific data (future phase)
-
-## Development
-
-```bash
-# Development mode with TypeScript compilation
-npm run dev
-
-# Production build
-npm run build
-npm start
-
-# Linting
-npm run lint
-npm run lint:fix
-```
-
-## Next Phases
-
-- **Phase 2**: Message parsing and JSON events
-- **Phase 2.5**: Multi-session support
-- **Phase 3**: Web interface with React/Next.js

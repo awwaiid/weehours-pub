@@ -139,15 +139,6 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
             <pre className="text-xs text-gray-300 whitespace-pre-wrap">{debugInfo}</pre>
           </div>
         )}
-
-        <div className="mt-6 text-sm text-gray-400">
-          <p className="mb-2">
-            <strong className="text-mud-cyan">Tavern Keeper's Note:</strong> Present your adventurer credentials to join the fellowship.
-          </p>
-          <p>
-            Returning travelers will find their seats saved by the hearth. New arrivals shall be welcomed with fresh ale.
-          </p>
-        </div>
       </div>
     </div>
   );

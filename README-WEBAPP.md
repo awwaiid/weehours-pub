@@ -72,4 +72,3 @@ npm run query types  # View event types
 npm run dev          # Start CLI MUD client
 ```
 
-Enjoy your WeeHours MUD experience! 🎮
