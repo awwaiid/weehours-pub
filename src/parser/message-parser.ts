@@ -124,7 +124,7 @@ export class MessageParser {
            /You tell \w+:/.test(content);
   }
 
-  private isPlayerList(content: string): boolean {
+  private isPlayerList(_content: string): boolean {
     // Disabled: Let "who" command output display as raw formatted content
     return false;
   }

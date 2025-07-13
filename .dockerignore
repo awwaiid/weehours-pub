@@ -1,0 +1,46 @@
+# Node modules
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+.next
+out
+
+# Development files
+*.log
+.env*
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README*.md
+CLAUDE.md
+docs
+
+# Test files
+test
+tests
+*.test.*
+*.spec.*
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+
+# SQLite database files (will be created in container)
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp
+temp

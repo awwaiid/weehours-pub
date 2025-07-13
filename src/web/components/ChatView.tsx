@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { apiCall } from '../lib/api';
 
 interface ParsedEvent {
   id: number;
@@ -95,9 +96,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
 
   const loadEvents = async () => {
     try {
-      const response = await fetch('/api/mud/events?limit=50', {
-        credentials: 'include'
-      });
+      const response = await apiCall('/api/mud/events?limit=50');
       
       if (response.ok) {
         const data = await response.json();
@@ -204,7 +203,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
           </div>
         );
         
-      default:
+      default: {
         const hasContent = event.data && typeof event.data === 'object' && event.data.content;
         const displayType = hasContent ? 'world' : event.event_type;
         
@@ -221,6 +220,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
             </pre>
           </div>
         );
+      }
     }
   };
 

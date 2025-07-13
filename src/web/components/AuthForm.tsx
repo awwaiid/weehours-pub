@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiCall } from '../lib/api';
 
 interface AuthFormProps {
   onAuth: (user: { sessionId: string; username: string }) => void
@@ -30,12 +31,8 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
         password: formData.password 
       };
 
-      const response = await fetch('/api/auth/connect', {
+      const response = await apiCall('/api/auth/connect', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
         body: JSON.stringify(payload)
       });
 

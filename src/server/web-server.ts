@@ -64,13 +64,16 @@ export class WebServer {
   }
 
   private setupRoutes(): void {
+    // Get base path from environment variable
+    const basePath = process.env.BASE_PATH || '';
+    
     // Health check
-    this.app.get('/api/health', (req, res) => {
+    this.app.get(`${basePath}/api/health`, (req, res) => {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
     // Unified authentication - connect to existing session or create new one
-    this.app.post('/api/auth/connect', async (req, res) => {
+    this.app.post(`${basePath}/api/auth/connect`, async (req, res) => {
       try {
         const { username, password } = req.body;
 
@@ -132,7 +135,7 @@ export class WebServer {
     });
 
     // User login
-    this.app.post('/api/auth/login', async (req, res) => {
+    this.app.post(`${basePath}/api/auth/login`, async (req, res) => {
       try {
         const { sessionId, password } = req.body;
 
@@ -172,7 +175,7 @@ export class WebServer {
     });
 
     // Logout
-    this.app.post('/api/auth/logout', (req, res) => {
+    this.app.post(`${basePath}/api/auth/logout`, (req, res) => {
       const user = (req.session as CustomSession).user;
       if (user && user.sessionId) {
         // Disconnect MUD connection
@@ -190,7 +193,7 @@ export class WebServer {
     });
 
     // Get current user info
-    this.app.get('/api/auth/user', (req, res) => {
+    this.app.get(`${basePath}/api/auth/user`, (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -203,7 +206,7 @@ export class WebServer {
     });
 
     // MUD connection management
-    this.app.post('/api/mud/connect', async (req, res) => {
+    this.app.post(`${basePath}/api/mud/connect`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -232,7 +235,7 @@ export class WebServer {
     });
 
     // Get MUD connection status
-    this.app.get('/api/mud/status', async (req, res) => {
+    this.app.get(`${basePath}/api/mud/status`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -247,7 +250,7 @@ export class WebServer {
       }
     });
 
-    this.app.post('/api/mud/disconnect', async (req, res) => {
+    this.app.post(`${basePath}/api/mud/disconnect`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -263,7 +266,7 @@ export class WebServer {
     });
 
     // Send command to MUD
-    this.app.post('/api/mud/command', async (req, res) => {
+    this.app.post(`${basePath}/api/mud/command`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -284,7 +287,7 @@ export class WebServer {
     });
 
     // Get recent messages
-    this.app.get('/api/mud/messages', async (req, res) => {
+    this.app.get(`${basePath}/api/mud/messages`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -301,7 +304,7 @@ export class WebServer {
     });
 
     // Get recent parsed events
-    this.app.get('/api/mud/events', async (req, res) => {
+    this.app.get(`${basePath}/api/mud/events`, async (req, res) => {
       const user = (req.session as CustomSession).user;
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -325,12 +328,13 @@ export class WebServer {
   }
 
   private setupWebSocket(): void {
+    const basePath = process.env.BASE_PATH || '';
     this.wss = new WebSocketServer({ 
       server: this.server,
-      path: '/ws'
+      path: `${basePath}/ws`
     });
     
-    this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+    this.wss.on('connection', (ws: WebSocket, _req: http.IncomingMessage) => {
       console.log('New WebSocket connection');
       
       // Send a ping to keep connection alive

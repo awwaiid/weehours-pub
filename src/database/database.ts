@@ -31,7 +31,7 @@ export class Database {
   private getAsync: (sql: string, params?: unknown[]) => Promise<unknown>;
   public allAsync: (sql: string, params?: unknown[]) => Promise<unknown[]>;
 
-  private constructor(private dbPath: string = './weehours.db') {
+  private constructor(private dbPath: string = './data/weehours.db') {
     this.db = new sqlite3.Database(dbPath);
     
     this.runAsync = promisify(this.db.run.bind(this.db));

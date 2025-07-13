@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiCall, getWebSocketUrl } from '../lib/api';
 import MudTerminal from './MudTerminal';
 import CommandInput from './CommandInput';
 import StatusBar from './StatusBar';
@@ -51,8 +52,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     fetchUpdates();
 
     // Set up WebSocket connection for real-time updates
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+    const ws = new WebSocket(getWebSocketUrl());
     
     ws.onopen = () => {
       console.log('Dashboard WebSocket connected');
@@ -97,7 +97,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   const loadConnectionStatus = async () => {
     try {
-      const response = await fetch('/api/mud/status', { credentials: 'include' });
+      const response = await apiCall('/api/mud/status');
       if (response.ok) {
         const data = await response.json();
         setConnectionStatus(data.status);
@@ -109,9 +109,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   const loadRecentMessages = async () => {
     try {
-      const response = await fetch('/api/mud/messages?limit=50', {
-        credentials: 'include'
-      });
+      const response = await apiCall('/api/mud/messages?limit=50');
       
       if (response.ok) {
         const data = await response.json();
@@ -130,12 +128,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   const handleSendCommand = async (command: string) => {
     try {
-      const response = await fetch('/api/mud/command', {
+      const response = await apiCall('/api/mud/command', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
         body: JSON.stringify({ command })
       });
       
@@ -150,9 +144,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
+      await apiCall('/api/auth/logout', {
+        method: 'POST'
       });
     } catch (error) {
       console.error('Logout error:', error);
