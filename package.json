@@ -1,7 +1,7 @@
 {
-  "name": "zeehours-pub",
+  "name": "weehours-pub",
   "version": "1.0.0",
-  "description": "MUD client for zeehours.net with web interface",
+  "description": "MUD client for weehours.net with web interface",
   "main": "dist/cli/index.js",
   "scripts": {
     "build": "tsc --build tsconfig.server.json",

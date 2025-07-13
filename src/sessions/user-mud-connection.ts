@@ -73,7 +73,7 @@ export class UserMudConnection {
           reject(new Error('Connection timeout'));
         }, 10000);
 
-        this.socket.connect(2000, 'zeehours.net', () => {
+        this.socket.connect(2000, 'weehours.net', () => {
           clearTimeout(timeout);
           this.connectionTime = new Date();
           this.setState('login');

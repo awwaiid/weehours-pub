@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-mud-dark: #1a1a1a;
-  --color-mud-light: #2d2d2d;
-  --color-mud-green: #00ff00;
-  --color-mud-cyan: #00ffff;
-  --color-mud-yellow: #ffff00;
+  --color-mud-dark: #0f0a0a;
+  --color-mud-light: #2a1810;
+  --color-mud-green: #d4af37;
+  --color-mud-cyan: #87ceeb;
+  --color-mud-yellow: #ffd700;
+  --color-mud-bronze: #cd7f32;
+  --color-mud-crimson: #dc143c;
+  --color-mud-forest: #228b22;
 }
 
 @layer base {
   html {
-    font-family: 'Courier New', monospace;
+    font-family: 'Georgia', 'Times New Roman', serif;
   }
   
   body {
@@ -21,49 +24,57 @@
 
 @layer components {
   .mud-terminal {
-    background-color: #000000;
+    background-color: #1a0f0a;
     color: var(--color-mud-green);
     font-family: 'Courier New', monospace;
     font-size: 0.875rem;
     padding: 1rem;
-    border-radius: 0.375rem;
-    border: 1px solid var(--color-mud-light);
+    border-radius: 0.5rem;
+    border: 2px solid var(--color-mud-bronze);
     height: 24rem;
     overflow-y: auto;
     white-space: pre-wrap;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
   }
   
   .mud-input {
     width: 100%;
     background-color: var(--color-mud-light);
     color: var(--color-mud-green);
-    border: 1px solid var(--color-mud-green);
+    border: 2px solid var(--color-mud-bronze);
     padding: 0.5rem 0.75rem;
-    font-family: 'Courier New', monospace;
+    font-family: 'Georgia', serif;
     font-size: 0.875rem;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
   }
   
   .mud-input:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--color-mud-cyan);
+    box-shadow: 0 0 0 2px var(--color-mud-yellow), inset 0 1px 3px rgba(0,0,0,0.2);
+    border-color: var(--color-mud-yellow);
   }
   
   .mud-button {
     background-color: var(--color-mud-light);
     color: var(--color-mud-green);
-    border: 1px solid var(--color-mud-green);
+    border: 2px solid var(--color-mud-bronze);
     padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-family: 'Courier New', monospace;
+    border-radius: 0.5rem;
+    font-family: 'Georgia', serif;
     font-size: 0.875rem;
+    font-weight: bold;
     transition: all 0.2s ease;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
   
   .mud-button:hover {
-    background-color: var(--color-mud-green);
-    color: #000000;
+    background-color: var(--color-mud-bronze);
+    color: var(--color-mud-dark);
+    border-color: var(--color-mud-yellow);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   }
   
   .mud-button:disabled {
@@ -74,13 +85,17 @@
   .mud-button:disabled:hover {
     background-color: var(--color-mud-light);
     color: var(--color-mud-green);
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
   
   .mud-card {
     background-color: var(--color-mud-light);
-    border: 1px solid var(--color-mud-green);
-    border-radius: 0.5rem;
+    border: 2px solid var(--color-mud-bronze);
+    border-radius: 0.75rem;
     padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    background-image: linear-gradient(135deg, var(--color-mud-light) 0%, #1a0f08 100%);
   }
   
   .mud-status-connected {
@@ -146,6 +161,26 @@
   
   .text-red-400 {
     color: #f87171;
+  }
+  
+  .text-mud-bronze {
+    color: var(--color-mud-bronze);
+  }
+  
+  .text-mud-crimson {
+    color: var(--color-mud-crimson);
+  }
+  
+  .text-mud-forest {
+    color: var(--color-mud-forest);
+  }
+  
+  .border-mud-bronze {
+    border-color: var(--color-mud-bronze);
+  }
+  
+  .bg-mud-bronze {
+    background-color: var(--color-mud-bronze);
   }
   
   .hover\:bg-mud-dark:hover {

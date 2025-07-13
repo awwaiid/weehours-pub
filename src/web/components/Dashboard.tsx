@@ -44,7 +44,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     isConnected: false,
     messageCount: 0
   });
-  const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('terminal');
+  const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('chat');
 
   useEffect(() => {
     // Initial data load
@@ -133,15 +133,19 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-mud-green">
-            Welcome, {user.username}
+            Greetings, {user.username}
           </h2>
         </div>
-        <div className="space-x-4">
+        <div className="flex items-center space-x-4">
+          <ViewToggle 
+            currentView={currentView} 
+            onViewChange={setCurrentView}
+          />
           <button
             onClick={handleLogout}
             className="mud-button"
           >
-            Logout
+Logout
           </button>
         </div>
       </div>
@@ -150,88 +154,19 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       <StatusBar status={connectionStatus} />
 
       {/* Main Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Terminal - Takes most space */}
-        <div className="lg:col-span-3">
-          {/* View Toggle */}
-          <div className="mb-4">
-            <ViewToggle 
-              currentView={currentView} 
-              onViewChange={setCurrentView}
-            />
-          </div>
-          
-          {/* Terminal or Chat View */}
-          {currentView === 'terminal' ? (
-            <MudTerminal messages={messages} />
-          ) : (
-            <ChatView sessionId={user.sessionId} />
-          )}
-          
-          <div className="mt-4">
-            <CommandInput
-              onSendCommand={handleSendCommand}
-              disabled={!connectionStatus.isConnected}
-            />
-          </div>
-        </div>
-
-        {/* Side Panel */}
-        <div className="space-y-4">
-          <div className="mud-card">
-            <h3 className="text-lg font-bold text-mud-green mb-3">
-              Connection Info
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="text-mud-cyan">State:</span>{' '}
-                <span className={`mud-status-${connectionStatus.state}`}>
-                  {connectionStatus.state}
-                </span>
-              </div>
-              <div>
-                <span className="text-mud-cyan">Login:</span>{' '}
-                <span className="text-mud-yellow">
-                  {connectionStatus.loginState}
-                </span>
-              </div>
-              <div>
-                <span className="text-mud-cyan">Messages:</span>{' '}
-                <span className="text-white">
-                  {connectionStatus.messageCount}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mud-card">
-            <h3 className="text-lg font-bold text-mud-green mb-3">
-              Quick Commands
-            </h3>
-            <div className="space-y-2">
-              <button
-                onClick={() => handleSendCommand('look')}
-                disabled={!connectionStatus.isConnected}
-                className="w-full mud-button text-xs"
-              >
-                Look
-              </button>
-              <button
-                onClick={() => handleSendCommand('who')}
-                disabled={!connectionStatus.isConnected}
-                className="w-full mud-button text-xs"
-              >
-                Who
-              </button>
-              <button
-                onClick={() => handleSendCommand('inventory')}
-                disabled={!connectionStatus.isConnected}
-                className="w-full mud-button text-xs"
-              >
-                Inventory
-              </button>
-            </div>
-          </div>
+      <div className="w-full">
+        {/* Terminal or Chat View */}
+        {currentView === 'terminal' ? (
+          <MudTerminal messages={messages} />
+        ) : (
+          <ChatView sessionId={user.sessionId} />
+        )}
+        
+        <div className="mt-4">
+          <CommandInput
+            onSendCommand={handleSendCommand}
+            disabled={!connectionStatus.isConnected}
+          />
         </div>
       </div>
     </div>

@@ -69,7 +69,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm text-mud-cyan mb-1">
-              MUD Username
+              Adventurer's Name
             </label>
             <input
               type="text"
@@ -78,7 +78,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
               value={formData.username}
               onChange={handleChange}
               className="mud-input"
-              placeholder="Your character name in WeeHours"
+              placeholder="Enter your character's name"
               required
             />
           </div>
@@ -86,7 +86,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
 
           <div>
             <label htmlFor="password" className="block text-sm text-mud-cyan mb-1">
-              MUD Password
+              Secret Passphrase
             </label>
             <input
               type="password"
@@ -95,7 +95,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
               value={formData.password}
               onChange={handleChange}
               className="mud-input"
-              placeholder="Your WeeHours password"
+              placeholder="Enter your secret passphrase"
               required
             />
           </div>
@@ -111,16 +111,16 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
             disabled={isLoading}
             className="w-full mud-button"
           >
-            {isLoading ? 'Connecting...' : 'Connect to WeeHours'}
+{isLoading ? 'Entering the realm...' : 'Enter the Inn'}
           </button>
         </form>
 
         <div className="mt-6 text-sm text-gray-400">
           <p className="mb-2">
-            <strong className="text-mud-cyan">Note:</strong> Enter your WeeHours MUD credentials.
+            <strong className="text-mud-cyan">Tavern Keeper's Note:</strong> Present your adventurer credentials to join the fellowship.
           </p>
           <p>
-            If you have an existing session, you'll be connected to it. Otherwise, a new session will be created.
+            Returning travelers will find their seats saved by the hearth. New arrivals shall be welcomed with fresh ale.
           </p>
         </div>
       </div>

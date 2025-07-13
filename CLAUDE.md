@@ -1,14 +1,14 @@
 # WeeHours MUD Client - Development Context
 
 ## Project Overview
-A modern TypeScript-based MUD client for zeehours.net with real-time message parsing and web interface capabilities. The project captures telnet MUD sessions, parses them into structured JSON events, and will provide a mobile-friendly web interface for chat-focused interaction.
+A modern TypeScript-based MUD client for weehours.net with real-time message parsing and web interface capabilities. The project captures telnet MUD sessions, parses them into structured JSON events, and will provide a mobile-friendly web interface for chat-focused interaction.
 
 ## Current Status: Phase 3 Complete ✅
 **Single-Service Web Application** - Unified Express server serving both API and Next.js frontend with multi-user MUD connections
 
 ## Project Structure
 ```
-zeehours-pub/
+weehours-pub/
 ├── src/
 │   ├── cli/                    # Phase 1: CLI client (COMPLETE)
 │   │   ├── index.ts           # Main entry point for CLI
@@ -119,7 +119,7 @@ npm run query recent 5  # Show recent events
 
 **Completed Features**:
 - **User Session Management** - Full lifecycle with secure session IDs and MUD credentials
-- **Individual MUD Connections** - Each user gets their own telnet connection to zeehours.net
+- **Individual MUD Connections** - Each user gets their own telnet connection to weehours.net
 - **Data Isolation** - All messages and events stored per user session ID
 - **Connection Management** - Auto-login, state tracking, and graceful disconnection
 - **Database Schema** - Complete user session isolation with foreign key relationships

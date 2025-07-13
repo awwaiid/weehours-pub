@@ -11,6 +11,7 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [mode, setMode] = useState<'chat' | 'cmd'>('chat');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -25,12 +26,19 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
     
     if (!command.trim() || disabled) return;
     
+    // Prepare the actual command to send
+    let actualCommand = command;
+    if (mode === 'chat') {
+      // Wrap chat messages in 'say' command
+      actualCommand = `say ${command}`;
+    }
+    
     // Add to history
     setCommandHistory(prev => [...prev, command]);
     setHistoryIndex(-1);
     
     // Send command
-    onSendCommand(command);
+    onSendCommand(actualCommand);
     
     // Clear input
     setCommand('');
@@ -80,6 +88,18 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
 
   return (
     <form onSubmit={handleSubmit} className="flex space-x-2">
+      <button
+        type="button"
+        onClick={() => setMode(mode === 'chat' ? 'cmd' : 'chat')}
+        disabled={disabled}
+        className={`mud-button px-3 ${
+          mode === 'chat' 
+            ? 'bg-mud-bronze text-mud-dark border-mud-yellow' 
+            : 'bg-mud-light text-mud-green border-mud-bronze'
+        }`}
+      >
+        {mode === 'chat' ? 'Chat' : 'Cmd'}
+      </button>
       <div className="flex-1 relative">
         <input
           ref={inputRef}
@@ -89,7 +109,12 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
           onKeyDown={handleKeyDown}
           disabled={disabled}
           className="mud-input"
-          placeholder={disabled ? 'Connect to MUD to send commands' : 'Enter MUD command...'}
+          placeholder={disabled 
+            ? 'Connect to MUD to send commands' 
+            : mode === 'chat' 
+              ? 'Type your message...' 
+              : 'Enter MUD command...'
+          }
           autoComplete="off"
         />
         {commandHistory.length > 0 && (

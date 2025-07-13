@@ -161,7 +161,7 @@ export class MessageParser {
   }
 
   private isUrlSubmission(content: string): boolean {
-    return content.includes('URL added to http://zeehours.net');
+    return content.includes('URL added to http://weehours.net');
   }
 
   // Event creation methods
