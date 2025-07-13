@@ -1,0 +1,13 @@
+services:
+  weehours-pub:
+    build:
+      context: .
+      args:
+        BASE_PATH: /weehours-pub
+    ports:
+      - "3000:3000"
+    environment:
+      - BASE_PATH=/weehours-pub
+    volumes:
+      - ./data:/app/data
+    user: "1000:1000"  # Use your host user ID

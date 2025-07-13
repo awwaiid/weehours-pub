@@ -30,83 +30,27 @@ interface ParsedEvent {
 
 interface ChatViewProps {
   sessionId: string;
+  refreshTrigger?: number;
 }
 
-export default function ChatView({ sessionId }: ChatViewProps) {
+export default function ChatView({ sessionId, refreshTrigger }: ChatViewProps) {
   const [events, setEvents] = useState<ParsedEvent[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Initial load of events
     loadEvents();
-    
-    // Set up WebSocket connection
-    const connectWebSocket = () => {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
-      wsRef.current = ws;
-      
-      ws.onopen = () => {
-        console.log('WebSocket connected');
-        console.log('Sending auth with sessionId:', sessionId);
-        // Authenticate with session ID
-        ws.send(JSON.stringify({ type: 'authenticate', sessionId }));
-      };
-      
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log('WebSocket received:', data);
-          
-          if (data.type === 'authenticated') {
-            console.log('WebSocket authenticated successfully');
-          } else if (data.type === 'new_message') {
-            // Reload events when new message arrives
-            loadEvents();
-          } else if (data.type === 'status_change') {
-            // Could update connection status here if needed
-            console.log('Status change:', data.status);
-          }
-        } catch (error) {
-          console.error('WebSocket message parse error:', error);
-        }
-      };
-      
-      ws.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code, event.reason);
-        // Only reconnect if it wasn't a clean close and we don't already have a timeout
-        if (event.code !== 1000 && !reconnectTimeoutRef.current) {
-          console.log('Attempting to reconnect in 3 seconds...');
-          reconnectTimeoutRef.current = setTimeout(() => {
-            reconnectTimeoutRef.current = null;
-            connectWebSocket();
-          }, 3000);
-        }
-      };
-      
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-    };
-    
-    connectWebSocket();
-    
-    // Cleanup
-    return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-        reconnectTimeoutRef.current = null;
-      }
-      if (wsRef.current) {
-        wsRef.current.close(1000, 'Component unmounting'); // Clean close
-      }
-    };
   }, [sessionId]);
 
+  // Refresh events when trigger changes (WebSocket message received)
   useEffect(() => {
-    // Always scroll to bottom
+    if (refreshTrigger && refreshTrigger > 0) {
+      loadEvents();
+    }
+  }, [refreshTrigger]);
+
+  // Auto-scroll to bottom when new events are added
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }

@@ -19,6 +19,7 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +59,16 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
       ...prev,
       [e.target.name]: e.target.value
     }));
+  };
+
+  const handleDebugSession = async () => {
+    try {
+      const response = await apiCall('/api/debug/session');
+      const data = await response.json();
+      setDebugInfo(JSON.stringify(data, null, 2));
+    } catch (err) {
+      setDebugInfo('Debug request failed: ' + err);
+    }
   };
 
   return (
@@ -111,6 +122,23 @@ export default function AuthForm({ onAuth }: AuthFormProps) {
 {isLoading ? 'Entering the realm...' : 'Enter the Pub'}
           </button>
         </form>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleDebugSession}
+            className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded text-sm"
+          >
+            Debug Session Info
+          </button>
+        </div>
+
+        {debugInfo && (
+          <div className="mt-4 p-3 bg-black border border-gray-600 rounded">
+            <h4 className="text-sm font-bold text-mud-cyan mb-2">Debug Info:</h4>
+            <pre className="text-xs text-gray-300 whitespace-pre-wrap">{debugInfo}</pre>
+          </div>
+        )}
 
         <div className="mt-6 text-sm text-gray-400">
           <p className="mb-2">

@@ -13,24 +13,15 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the server application (TypeScript only) - force clean build
-RUN npx tsc --build tsconfig.server.json --force
-
-# Verify server build output exists
-RUN ls -la dist/ || (echo "Server build failed - no dist directory" && exit 1)
-
-# Build Next.js application for production
-WORKDIR /app/src/web
+# Build both server and Next.js applications
 # BASE_PATH can be overridden at runtime, but we need a default for build
 ARG BASE_PATH=""
 ENV BASE_PATH=$BASE_PATH
-RUN npx next build
+RUN npm run build:all
 
-# Verify Next.js build output exists
-RUN ls -la .next/ || (echo "Next.js build failed - no .next directory" && exit 1)
-
-# Return to app root
-WORKDIR /app
+# Verify build outputs exist
+RUN ls -la dist/ || (echo "Server build failed - no dist directory" && exit 1)
+RUN ls -la src/web/.next/ || (echo "Next.js build failed - no .next directory" && exit 1)
 
 # Production stage
 FROM node:18-alpine AS production
@@ -44,6 +35,10 @@ RUN adduser -S mudapp -u 1001
 
 # Set working directory
 WORKDIR /app
+
+# Accept BASE_PATH as build argument and set as environment variable
+ARG BASE_PATH=""
+ENV BASE_PATH=$BASE_PATH
 
 # Copy package files
 COPY package*.json ./
@@ -61,8 +56,8 @@ COPY --from=builder --chown=mudapp:nodejs /app/next.config.js ./
 COPY --from=builder --chown=mudapp:nodejs /app/tailwind.config.js ./
 COPY --from=builder --chown=mudapp:nodejs /app/postcss.config.js ./
 
-# Create data directory for SQLite database
-RUN mkdir -p /app/data && chown -R mudapp:nodejs /app
+# Create data directory for SQLite database with proper permissions
+RUN mkdir -p /app/data && chown -R mudapp:nodejs /app/data && chmod 755 /app/data
 
 # Set production environment
 ENV NODE_ENV=production
@@ -73,12 +68,12 @@ USER mudapp
 # Expose the application port
 EXPOSE 3000
 
-# Health check
+# Health check - respects BASE_PATH environment variable
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+  CMD node -e "const basePath = process.env.BASE_PATH || ''; require('http').get(\`http://localhost:3000\${basePath}/api/health\`, (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application (pre-built, no need to rebuild)
-CMD ["node", "dist/server/index.js"]
+CMD ["npm", "start"]

@@ -46,6 +46,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     messageCount: 0
   });
   const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('chat');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     // Initial data load
@@ -66,6 +67,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
         if (data.type === 'new_message') {
           // Reload messages when new message arrives
           loadRecentMessages();
+          // Trigger refresh for ChatView
+          setRefreshTrigger(prev => prev + 1);
         } else if (data.type === 'status_change') {
           // Update connection status in real-time
           setConnectionStatus(data.status);
@@ -183,7 +186,7 @@ Logout
         {currentView === 'terminal' ? (
           <MudTerminal messages={messages} />
         ) : (
-          <ChatView sessionId={user.sessionId} />
+          <ChatView sessionId={user.sessionId} refreshTrigger={refreshTrigger} />
         )}
       </div>
       

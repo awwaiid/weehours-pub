@@ -55,14 +55,27 @@ export class WebServer {
     this.app.use(cookieParser());
 
     // Session configuration
+    const basePath = process.env.BASE_PATH || '';
+    // For BASE_PATH deployments, always use root path for cookies to avoid path conflicts
+    // This ensures cookies work regardless of the base path
+    const cookiePath = '/';
+    
+    console.log('DEBUG: Setting session cookie path to:', cookiePath, '(using root path for compatibility)');
+    console.log('DEBUG: BASE_PATH environment variable:', basePath);
+    console.log('DEBUG: NODE_ENV:', process.env.NODE_ENV);
+    
     this.app.use(session({
+      name: 'weehours.sid', // Custom session name to avoid conflicts
       secret: process.env.SESSION_SECRET || 'weehours-dev-secret-change-in-production',
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true, // Set to true to ensure cookie is always set
+      rolling: true, // Reset expiration on each request
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Temporarily disable for testing - change back for production
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        path: cookiePath, // Use root path for broader compatibility
+        sameSite: 'lax' // Allow cross-site requests for better compatibility
       }
     }));
   }
@@ -74,6 +87,38 @@ export class WebServer {
     // Health check
     this.app.get(`${basePath}/api/health`, (req, res) => {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    });
+
+    // Debug endpoint to check session without MUD connection
+    this.app.get(`${basePath}/api/debug/session`, (req, res) => {
+      const user = (req.session as CustomSession).user;
+      console.log('DEBUG /api/debug/session - Session ID:', req.session.id);
+      console.log('DEBUG /api/debug/session - Session user:', user);
+      console.log('DEBUG /api/debug/session - Raw cookies:', req.headers.cookie);
+      console.log('DEBUG /api/debug/session - Parsed cookies:', req.cookies);
+      console.log('DEBUG /api/debug/session - BASE_PATH:', process.env.BASE_PATH);
+      console.log('DEBUG /api/debug/session - Request URL:', req.url);
+      console.log('DEBUG /api/debug/session - Request path:', req.path);
+      console.log('DEBUG /api/debug/session - Request host:', req.get('host'));
+      
+      res.json({
+        authenticated: !!(user && user.sessionId),
+        sessionId: req.session.id,
+        user: user || null,
+        rawCookies: req.headers.cookie || null,
+        parsedCookies: req.cookies || null,
+        basePath: process.env.BASE_PATH || '/',
+        requestUrl: req.url,
+        requestPath: req.path,
+        requestHost: req.get('host'),
+        sessionConfig: {
+          name: 'weehours.sid',
+          path: '/',
+          secure: false,
+          httpOnly: true,
+          sameSite: 'lax'
+        }
+      });
     });
 
     // Unified authentication - connect to existing session or create new one
@@ -110,7 +155,11 @@ export class WebServer {
           username
         };
 
-        // Auto-connect to MUD if not already connected
+        console.log('DEBUG /api/auth/connect - Session after setting user:', req.session.id);
+        console.log('DEBUG /api/auth/connect - User set to:', (req.session as CustomSession).user);
+        console.log('DEBUG /api/auth/connect - Request cookies before:', req.headers.cookie);
+        
+        // Auto-connect to MUD if not already connected (do this before session save)
         try {
           const status = await this.sessionManager.getConnectionStatus(sessionId);
           if (!status.isConnected) {
@@ -125,11 +174,26 @@ export class WebServer {
           // Don't fail the auth if MUD connection fails
         }
 
-        res.json({ 
-          success: true, 
-          sessionId,
-          username,
-          message: isNewSession ? 'New session created successfully' : 'Connected to existing session'
+        // Force session save and send response
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return res.status(500).json({ error: 'Session save failed' });
+          }
+          
+          console.log('DEBUG /api/auth/connect - Session saved successfully');
+          console.log('DEBUG /api/auth/connect - Response headers after save:', res.getHeaders());
+          
+          res.json({ 
+            success: true, 
+            sessionId,
+            username,
+            message: isNewSession ? 'New session created successfully' : 'Connected to existing session',
+            debugInfo: {
+              sessionId: req.session.id,
+              cookiesReceived: req.headers.cookie || 'none'
+            }
+          });
         });
 
       } catch (error) {
@@ -191,7 +255,7 @@ export class WebServer {
           console.error('Session destruction error:', err);
           return res.status(500).json({ error: 'Logout failed' });
         }
-        res.clearCookie('connect.sid');
+        res.clearCookie('weehours.sid', { path: '/' });
         res.json({ success: true, message: 'Logged out successfully' });
       });
     });
@@ -293,6 +357,9 @@ export class WebServer {
     // Get recent messages
     this.app.get(`${basePath}/api/mud/messages`, async (req, res) => {
       const user = (req.session as CustomSession).user;
+      console.log('DEBUG /api/mud/messages - Session ID:', req.session.id);
+      console.log('DEBUG /api/mud/messages - Session user:', user);
+      console.log('DEBUG /api/mud/messages - Cookies:', req.headers.cookie);
       if (!user || !user.sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
       }

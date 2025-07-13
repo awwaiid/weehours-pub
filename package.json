@@ -4,11 +4,13 @@
   "description": "MUD client for weehours.net with web interface",
   "main": "dist/cli/index.js",
   "scripts": {
-    "build": "tsc --build tsconfig.server.json",
+    "build": "tsc --build tsconfig.server.json --force",
+    "build:next": "cd src/web && npx next build",
+    "build:all": "npm run build && npm run build:next",
     "dev": "ts-node src/cli/index.ts",
     "start": "node dist/server/index.js",
     "web": "ts-node src/server/index.ts",
-    "web:build": "npm run build && node dist/server/index.js",
+    "web:build": "npm run build:all",
     "query": "ts-node src/query-events.ts",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "lint:fix": "eslint src/**/*.ts src/**/*.tsx --fix"
