@@ -20,7 +20,7 @@ export class WebServer {
   private server: http.Server;
   private sessionManager: UserSessionManager;
   private port: number;
-  private nextApp: any;
+  private nextApp: unknown;
   private wss!: WebSocketServer;
   private wsClients: Map<string, Set<WebSocket>> = new Map();
 
@@ -32,11 +32,15 @@ export class WebServer {
     
     // Initialize Next.js
     const dev = process.env.NODE_ENV !== 'production';
+    const basePath = process.env.BASE_PATH || '';
+    
     this.nextApp = next({ 
       dev, 
       dir: './src/web',
       conf: {
-        distDir: '../../.next'
+        distDir: '../../.next',
+        basePath,
+        assetPrefix: basePath
       }
     });
     
@@ -321,7 +325,7 @@ export class WebServer {
     });
 
     // Handle Next.js routes (must be last)
-    const handle = this.nextApp.getRequestHandler();
+    const handle = (this.nextApp as any).getRequestHandler();
     this.app.all('*', (req, res) => {
       return handle(req, res);
     });
@@ -390,7 +394,7 @@ export class WebServer {
   }
 
   // Method to broadcast new messages to connected clients
-  public broadcastToSession(sessionId: string, data: any): void {
+  public broadcastToSession(sessionId: string, data: unknown): void {
     const clientSet = this.wsClients.get(sessionId);
     if (clientSet) {
       const message = JSON.stringify(data);
@@ -404,10 +408,10 @@ export class WebServer {
 
   async start(): Promise<void> {
     await this.sessionManager.initialize();
-    await this.nextApp.prepare();
+    await (this.nextApp as any).prepare();
     
     // Set up WebSocket broadcasting for session manager
-    this.sessionManager.setWebSocketBroadcast((sessionId: string, data: any) => {
+    this.sessionManager.setWebSocketBroadcast((sessionId: string, data: unknown) => {
       this.broadcastToSession(sessionId, data);
     });
     

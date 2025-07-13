@@ -189,7 +189,7 @@ export class Database {
     }
   }
 
-  async getRecentEvents(userSessionId: string, limit: number = 100): Promise<any[]> {
+  async getRecentEvents(userSessionId: string, limit: number = 100): Promise<unknown[]> {
     const sql = `
       SELECT * FROM parsed_events 
       WHERE user_session_id = ?
@@ -199,7 +199,7 @@ export class Database {
     
     try {
       const result = await this.allAsync(sql, [userSessionId, limit]);
-      return result.map((row: any) => ({
+      return (result as Record<string, unknown>[]).map((row) => ({
         ...row,
         data: typeof row.data === 'string' ? JSON.parse(row.data) : row.data
       }));

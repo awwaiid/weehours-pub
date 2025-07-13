@@ -13,8 +13,24 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the server application (TypeScript only) - force clean build
+RUN npx tsc --build tsconfig.server.json --force
+
+# Verify server build output exists
+RUN ls -la dist/ || (echo "Server build failed - no dist directory" && exit 1)
+
+# Build Next.js application for production
+WORKDIR /app/src/web
+# BASE_PATH can be overridden at runtime, but we need a default for build
+ARG BASE_PATH=""
+ENV BASE_PATH=$BASE_PATH
+RUN npx next build
+
+# Verify Next.js build output exists
+RUN ls -la .next/ || (echo "Next.js build failed - no .next directory" && exit 1)
+
+# Return to app root
+WORKDIR /app
 
 # Production stage
 FROM node:18-alpine AS production
@@ -35,15 +51,21 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/web ./src/web
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/tailwind.config.js ./
-COPY --from=builder /app/postcss.config.js ./
+# Copy built server application from builder stage
+COPY --from=builder --chown=mudapp:nodejs /app/dist ./dist
+
+# Copy web source files and built Next.js application
+COPY --from=builder --chown=mudapp:nodejs /app/src/web ./src/web
+COPY --from=builder --chown=mudapp:nodejs /app/src/web/.next ./src/web/.next
+COPY --from=builder --chown=mudapp:nodejs /app/next.config.js ./
+COPY --from=builder --chown=mudapp:nodejs /app/tailwind.config.js ./
+COPY --from=builder --chown=mudapp:nodejs /app/postcss.config.js ./
 
 # Create data directory for SQLite database
 RUN mkdir -p /app/data && chown -R mudapp:nodejs /app
+
+# Set production environment
+ENV NODE_ENV=production
 
 # Switch to non-root user
 USER mudapp
@@ -58,5 +80,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start the application
-CMD ["npm", "run", "web:build"]
+# Start the application (pre-built, no need to rebuild)
+CMD ["node", "dist/server/index.js"]

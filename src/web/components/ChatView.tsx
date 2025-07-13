@@ -3,10 +3,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiCall } from '../lib/api';
 
+interface Player {
+  name: string;
+  idle?: string;
+}
+
+interface EventData {
+  speaker?: string;
+  message?: string;
+  command?: string;
+  title?: string;
+  description?: string;
+  exits?: string[];
+  players?: Player[];
+  action?: string;
+  content?: string;
+  [key: string]: unknown;
+}
+
 interface ParsedEvent {
   id: number;
   event_type: string;
-  data: any;
+  data: EventData;
   timestamp: string;
 }
 
@@ -171,7 +189,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
           <div key={event.id} className="mb-3 p-2 bg-mud-dark border-l-2 border-mud-green">
             <span className="text-mud-cyan text-xs">[{time}] </span>
             <div className="text-mud-green font-bold">Players Online:</div>
-            {event.data.players && event.data.players.map((player: any, i: number) => (
+            {event.data.players && event.data.players.map((player: Player, i: number) => (
               <div key={i} className="text-white ml-2">
                 {player.name} {player.idle && `(idle: ${player.idle})`}
               </div>

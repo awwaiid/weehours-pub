@@ -29,7 +29,11 @@ weehours-pub/
 ├── src/web/                   # Phase 3: Next.js frontend (COMPLETE)
 │   ├── app/                     # Next.js app directory (layout, pages)
 │   ├── components/              # React components (AuthForm, Dashboard, etc.)
+│   ├── lib/                     # API utilities with BASE_PATH support
 │   └── styles/                  # Tailwind CSS and global styles
+├── data/                      # SQLite database files (Docker volume mount)
+├── Dockerfile                 # Production Docker image with multi-stage build
+├── .dockerignore             # Docker build context optimization
 ├── package.json               # All dependencies (backend + frontend)
 ├── tsconfig.json              # Main TypeScript config with JSX support
 ├── tsconfig.server.json       # Server-only TypeScript build config
@@ -45,9 +49,10 @@ weehours-pub/
 ## Technology Stack
 - **Backend**: Node.js, TypeScript, raw TCP sockets, SQLite3
 - **Frontend** (planned): Next.js, React, TypeScript, Tailwind CSS
-- **Database**: SQLite with session-aware tables
-- **Real-time**: WebSocket for live updates (planned)
+- **Database**: SQLite with session-aware tables (stored in data/ directory)
+- **Real-time**: WebSocket for live updates with BASE_PATH support
 - **Development**: CommonJS modules, ESLint v8, ts-node
+- **Deployment**: Docker with multi-stage build, nginx-proxy compatible
 
 ## Database Schema
 ```sql
@@ -66,6 +71,12 @@ npm run build        # Build server components
 npm run web:build    # Build and start production server
 npm run lint         # ESLint check
 
+# Docker Production Deployment
+docker build -t weehours-pub .
+docker run -p 3000:3000 -v ./data:/app/data weehours-pub
+# Environment Variables:
+# BASE_PATH=/weehours-pub  # For nginx proxy subpaths (default: /)
+
 # CLI & Database
 npm run dev          # Start CLI client with real-time parsing
 npm run query types  # Show parsed event distribution
@@ -73,8 +84,9 @@ npm run query chat   # Show chat messages
 npm run query recent 5  # Show recent events
 
 # Production Usage
-# 1. Start web server: npm run web (port 3000)
-# 2. Visit: http://localhost:3000
+# Development: npm run web (port 3000)
+# Production: docker run with volume mount for data persistence
+# nginx-proxy: Set BASE_PATH environment variable for subpaths
 # Single service serves both API and web interface!
 ```
 
@@ -141,6 +153,8 @@ npm run query recent 5  # Show recent events
 - **Connection Management** - Connect/disconnect controls with status indicators
 - **Session Isolation** - Each user sees only their own MUD messages and data
 - **Simplified Deployment** - Single service architecture for easy hosting
+- **BASE_PATH Support** - Configurable base path for nginx proxy subpaths
+- **Docker Ready** - Production Dockerfile with security and optimization
 
 ## Key Files to Understand
 
@@ -157,9 +171,14 @@ npm run query recent 5  # Show recent events
 - Extensible architecture for adding new message patterns
 
 ### `src/database/database.ts`
-- SQLite database operations
+- SQLite database operations with data/ directory storage
 - Methods for logging raw messages and parsed events
 - Session-aware schema ready for multi-session support
+
+### `src/web/lib/api.ts`
+- BASE_PATH-aware API utility functions
+- Automatic base path detection for browser and SSR
+- WebSocket URL generation with proxy support
 
 ## Development Notes
 
@@ -208,12 +227,52 @@ npm run query recent 5  # Show recent events
 4. **Mobile App** - React Native version
 5. **Game Features** - Maps, inventories, character sheets
 
+## Docker Deployment
+
+### Environment Variables
+- `BASE_PATH`: Base path for nginx proxy subpaths (default: `/`)
+  - Example: `BASE_PATH=/weehours-pub` serves app under `/weehours-pub/`
+  - Automatically configures Next.js basePath and API routes
+- `SESSION_SECRET`: Session encryption key (change in production)
+- `NODE_ENV`: Set to `production` for optimized builds
+
+### Production Deployment
+```bash
+# Build Docker image
+docker build -t weehours-pub .
+
+# Run with data persistence and custom base path
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  -e BASE_PATH=/weehours-pub \
+  -e SESSION_SECRET=your-secure-secret \
+  --name weehours-pub \
+  weehours-pub
+```
+
+### Docker Compose Example
+```yaml
+services:
+  weehours-pub:
+    build: .
+    environment:
+      - BASE_PATH=/weehours-pub
+      - SESSION_SECRET=change-me-in-production
+    volumes:
+      - ./data:/app/data
+    expose:
+      - "3000"
+```
+
 ## Important Considerations
 - **Single Service**: Web interface and API served from same Express server (port 3000)
 - **Real-time Parsing**: All MUD messages parsed live during user sessions
 - **Data Isolation**: Each user's messages/events stored separately by user_session_id
 - **Extensible Parser**: Easy to add new message type patterns and event types
-- **WebSocket Communication**: Real-time message streaming per user session
+- **WebSocket Communication**: Real-time message streaming per user session with BASE_PATH
 - **Session Management**: Secure session handling with automatic cleanup
 - **Development Ready**: TypeScript, ESLint, and hot-reload for development
-- **Production Ready**: Build process creates optimized static assets
+- **Production Ready**: Docker deployment with multi-stage build and security
+- **nginx-proxy Compatible**: BASE_PATH environment variable for subpath deployment
+- **Data Persistence**: SQLite database in data/ directory for volume mounting

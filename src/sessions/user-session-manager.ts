@@ -5,13 +5,13 @@ import { UserMudConnection, ConnectionStatus } from './user-mud-connection';
 export class UserSessionManager {
   private database: Database;
   private activeConnections: Map<string, UserMudConnection> = new Map();
-  private webSocketBroadcast?: (sessionId: string, data: any) => void;
+  private webSocketBroadcast?: (sessionId: string, data: unknown) => void;
 
   constructor() {
     this.database = Database.getInstance();
   }
 
-  setWebSocketBroadcast(broadcastFn: (sessionId: string, data: any) => void): void {
+  setWebSocketBroadcast(broadcastFn: (sessionId: string, data: unknown) => void): void {
     this.webSocketBroadcast = broadcastFn;
   }
 
@@ -156,7 +156,7 @@ export class UserSessionManager {
     return await this.database.getRecentMessages(sessionId, limit);
   }
 
-  async getRecentEvents(sessionId: string, limit: number = 100): Promise<any[]> {
+  async getRecentEvents(sessionId: string, limit: number = 100): Promise<unknown[]> {
     return await this.database.getRecentEvents(sessionId, limit);
   }
 

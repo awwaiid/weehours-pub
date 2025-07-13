@@ -1,9 +1,35 @@
+// Extend window type to include our global variable
+declare global {
+  interface Window {
+    __BASE_PATH__?: string;
+  }
+}
+
 // API utility functions with base path support
 const getBasePath = () => {
-  // In the browser, use the base path from the current URL
+  // In the browser, get base path from global variable or URL
   if (typeof window !== 'undefined') {
-    const basePath = window.location.pathname.split('/').slice(0, -1).join('/');
-    return basePath === '' ? '' : basePath;
+    // Use the global variable injected by the layout
+    if (window.__BASE_PATH__) {
+      return window.__BASE_PATH__;
+    }
+    
+    // Try to get from meta tag
+    const nextBasePath = document.querySelector('meta[name="base-path"]')?.getAttribute('content');
+    if (nextBasePath) {
+      return nextBasePath;
+    }
+    
+    // Fallback: detect from current URL structure
+    const pathname = window.location.pathname;
+    const segments = pathname.split('/').filter(Boolean);
+    
+    // Check if first segment looks like a base path (not 'api', common page names, etc.)
+    if (segments.length > 0 && !['api', 'auth', '_next'].includes(segments[0])) {
+      return '/' + segments[0];
+    }
+    
+    return '';
   }
   
   // For SSR, use the BASE_PATH environment variable
