@@ -125,7 +125,8 @@ export class MessageParser {
   }
 
   private isPlayerList(content: string): boolean {
-    return content.includes('WeeHours LP ::') && content.includes('players ::');
+    // Disabled: Let "who" command output display as raw formatted content
+    return false;
   }
 
   private isPlayerAction(content: string): boolean {

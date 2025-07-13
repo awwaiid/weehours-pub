@@ -50,23 +50,8 @@ export class UserMudConnection {
       // Update database connection status
       await this.database.updateMudConnectionStatus(this.userSession.id, false, 'connecting');
       
-      // TEMPORARILY DISABLED FOR DISPLAY DEBUGGING
-      // this.setupEventHandlers();
+      this.setupEventHandlers();
       
-      // Mock successful connection for testing
-      setTimeout(() => {
-        this.connectionTime = new Date();
-        this.setState('connected');
-        this.loginState = 'logged_in';
-        this.database.updateMudConnectionStatus(this.userSession.id, true, 'connected');
-        
-        // Add some mock messages for testing
-        this.addMockMessage('Welcome to WeeHours MUD!');
-        this.addMockMessage('You are in the Pub.');
-        this.addMockMessage('> ');
-      }, 1000);
-      
-      /* ORIGINAL CONNECTION CODE - COMMENTED OUT FOR DEBUGGING
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           this.setState('error');
@@ -86,7 +71,6 @@ export class UserMudConnection {
           reject(error);
         });
       });
-      */
 
     } catch (error) {
       this.setState('error');
@@ -188,8 +172,7 @@ export class UserMudConnection {
     try {
       console.log(`[${this.userSession.id}] MUD_OUT:`, command);
       
-      // TEMPORARILY DISABLED FOR DISPLAY DEBUGGING
-      // this.socket.write(command + '\n');
+      this.socket.write(command + '\n');
       
       this.lastActivity = new Date();
       
@@ -212,10 +195,6 @@ export class UserMudConnection {
         }
       });
       
-      // Mock response for testing
-      setTimeout(() => {
-        this.addMockMessage(`Mock response to: ${command}`);
-      }, 500);
       
     } catch (error) {
       console.error(`Error sending command for user session ${this.userSession.id}:`, error);
@@ -226,8 +205,7 @@ export class UserMudConnection {
   async disconnect(): Promise<void> {
     if (this.state !== 'disconnected') {
       try {
-        // TEMPORARILY DISABLED FOR DISPLAY DEBUGGING
-        // this.socket.destroy();
+        this.socket.destroy();
       } catch (error) {
         console.error(`Error disconnecting user session ${this.userSession.id}:`, error);
       }

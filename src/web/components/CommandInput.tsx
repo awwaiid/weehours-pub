@@ -29,8 +29,14 @@ export default function CommandInput({ onSendCommand, disabled = false }: Comman
     // Prepare the actual command to send
     let actualCommand = command;
     if (mode === 'chat') {
-      // Wrap chat messages in 'say' command
-      actualCommand = `say ${command}`;
+      // Check for /me command in chat mode
+      if (command.startsWith('/me ')) {
+        // Remove "/me " and send as a direct command
+        actualCommand = command.substring(4);
+      } else {
+        // Wrap chat messages in 'say' command
+        actualCommand = `say ${command}`;
+      }
     }
     
     // Add to history

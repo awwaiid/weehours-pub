@@ -139,11 +139,20 @@ export default function ChatView({ sessionId }: ChatViewProps) {
         );
         
       default:
+        const hasContent = event.data && typeof event.data === 'object' && event.data.content;
+        const displayType = hasContent ? 'world' : event.event_type;
+        
         return (
-          <div key={event.id} className="mb-2 opacity-75">
+          <div key={event.id} className="mb-3 p-2 bg-mud-dark border border-mud-bronze rounded">
             <span className="text-mud-cyan text-xs">[{time}] </span>
-            <span className="text-gray-400">[{event.event_type}]</span>
-            <span className="text-gray-300 ml-2">{JSON.stringify(event.data)}</span>
+            <span className="text-gray-400">[{displayType}]</span>
+            <pre className="text-gray-300 text-sm mt-1 whitespace-pre-wrap font-mono">
+              {hasContent
+                ? event.data.content 
+                : typeof event.data === 'string' 
+                  ? event.data 
+                  : JSON.stringify(event.data, null, 2)}
+            </pre>
           </div>
         );
     }
