@@ -1,8 +1,8 @@
 import '../styles/globals.css';
 
 export const metadata = {
-  title: 'WeeHours MUD Client',
-  description: 'Web-based client for zeehours.net MUD'
+  title: 'WeeHours Pub Chat',
+  description: 'Scheming over pints with your pals'
 };
 
 export default function RootLayout({

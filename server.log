@@ -4,7 +4,7 @@
 
 
 
---- SERVER RESTARTING AT 2025-07-12T23:18:11.428Z ---
+--- SERVER RESTARTING AT 2025-07-12T23:29:05.137Z ---
 WeeHours MUD Web Server
 =======================
 Starting on port 3000...
@@ -25,9 +25,9 @@ Database initialized successfully
 WebServer running on http://localhost:3000
 Next.js app ready
  ○ Compiling / ...
- ✓ Compiled / in 3s (687 modules)
- GET / 200 in 5284ms
- ✓ Compiled in 758ms (687 modules)
- GET / 200 in 775ms
- ✓ Compiled in 833ms (687 modules)
- GET / 200 in 637ms
+ ✓ Compiled / in 3.3s (687 modules)
+ GET / 200 in 5170ms
+ ✓ Compiled in 740ms (687 modules)
+ GET / 200 in 918ms
+ ✓ Compiled in 610ms (687 modules)
+ GET / 200 in 824ms

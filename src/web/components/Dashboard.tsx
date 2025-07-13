@@ -44,7 +44,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     isConnected: false,
     messageCount: 0
   });
-  const [isConnecting, setIsConnecting] = useState(false);
   const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('terminal');
 
   useEffect(() => {
@@ -95,40 +94,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     }
   };
 
-  const handleConnect = async () => {
-    setIsConnecting(true);
-    try {
-      const response = await fetch('/api/mud/connect', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        alert(data.error || 'Failed to connect to MUD');
-      }
-    } catch (error) {
-      alert('Network error while connecting to MUD');
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const handleDisconnect = async () => {
-    try {
-      const response = await fetch('/api/mud/disconnect', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        alert(data.error || 'Failed to disconnect from MUD');
-      }
-    } catch (error) {
-      alert('Network error while disconnecting from MUD');
-    }
-  };
 
   const handleSendCommand = async (command: string) => {
     try {
@@ -170,27 +135,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           <h2 className="text-2xl font-bold text-mud-green">
             Welcome, {user.username}
           </h2>
-          <p className="text-mud-cyan text-sm">
-            Session: {user.sessionId.substring(0, 8)}...
-          </p>
         </div>
         <div className="space-x-4">
-          {!connectionStatus.isConnected ? (
-            <button
-              onClick={handleConnect}
-              disabled={isConnecting}
-              className="mud-button"
-            >
-              {isConnecting ? 'Connecting...' : 'Connect to MUD'}
-            </button>
-          ) : (
-            <button
-              onClick={handleDisconnect}
-              className="mud-button"
-            >
-              Disconnect
-            </button>
-          )}
           <button
             onClick={handleLogout}
             className="mud-button"

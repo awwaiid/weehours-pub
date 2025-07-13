@@ -25,10 +25,10 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-mud-green mb-2">
-            WeeHours MUD Client
+            WeeHours Pub Chat
           </h1>
           <p className="text-mud-cyan">
-            Web-based interface for zeehours.net
+            Scheming over pints with your pals
           </p>
         </header>
 

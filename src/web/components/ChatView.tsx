@@ -64,13 +64,13 @@ export default function ChatView({ sessionId }: ChatViewProps) {
           </div>
         );
         
-      case 'user_command':
+      case 'user_command': {
         // Don't render chat commands since they'll be echoed back by the server
         const command = event.data.command?.toLowerCase() || '';
         const isChatCommand = command.startsWith('say ') || 
                              command.startsWith('tell ') || 
                              command.startsWith('"') ||
-                             command.startsWith("'") ||
+                             command.startsWith('\'') ||
                              /^say$/.test(command);
         
         if (isChatCommand) {
@@ -83,6 +83,7 @@ export default function ChatView({ sessionId }: ChatViewProps) {
             <span className="text-mud-green">{'> ' + event.data.command}</span>
           </div>
         );
+      }
         
       case 'room_description':
         return (

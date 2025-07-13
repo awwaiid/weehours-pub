@@ -100,6 +100,21 @@ export class WebServer {
           username
         };
 
+        // Auto-connect to MUD if not already connected
+        try {
+          const status = await this.sessionManager.getConnectionStatus(sessionId);
+          if (!status.isConnected) {
+            await this.sessionManager.connectMudForUser(
+              sessionId,
+              () => {},  // onMessage - no longer needed for real-time push
+              () => {}   // onStateChange - no longer needed for real-time push
+            );
+          }
+        } catch (mudConnectError) {
+          console.log('Auto-connect to MUD failed (non-blocking):', mudConnectError);
+          // Don't fail the auth if MUD connection fails
+        }
+
         res.json({ 
           success: true, 
           sessionId,
