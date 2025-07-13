@@ -5,9 +5,14 @@ import { UserMudConnection, ConnectionStatus } from './user-mud-connection';
 export class UserSessionManager {
   private database: Database;
   private activeConnections: Map<string, UserMudConnection> = new Map();
+  private webSocketBroadcast?: (sessionId: string, data: any) => void;
 
   constructor() {
     this.database = Database.getInstance();
+  }
+
+  setWebSocketBroadcast(broadcastFn: (sessionId: string, data: any) => void): void {
+    this.webSocketBroadcast = broadcastFn;
   }
 
   async initialize(): Promise<void> {
@@ -73,8 +78,36 @@ export class UserSessionManager {
 
     const connection = new UserMudConnection(
       userSession,
-      onMessage || (() => {}),
-      onStateChange || (() => {})
+      (sessionId: string, message: string, isOutgoing?: boolean) => {
+        // Call the original onMessage callback
+        if (onMessage) {
+          onMessage(sessionId, message, isOutgoing);
+        }
+        
+        // Broadcast new message via WebSocket
+        if (this.webSocketBroadcast) {
+          this.webSocketBroadcast(sessionId, {
+            type: 'new_message',
+            message,
+            isOutgoing: isOutgoing || false,
+            timestamp: new Date().toISOString()
+          });
+        }
+      },
+      (sessionId: string, status: ConnectionStatus) => {
+        // Call the original onStateChange callback
+        if (onStateChange) {
+          onStateChange(sessionId, status);
+        }
+        
+        // Broadcast status change via WebSocket
+        if (this.webSocketBroadcast) {
+          this.webSocketBroadcast(sessionId, {
+            type: 'status_change',
+            status
+          });
+        }
+      }
     );
 
     await connection.connect();

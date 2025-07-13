@@ -50,11 +50,44 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
     // Initial data load
     fetchUpdates();
 
-    // Poll for updates every 3 seconds
-    const intervalId = setInterval(fetchUpdates, 3000);
+    // Set up WebSocket connection for real-time updates
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+    
+    ws.onopen = () => {
+      console.log('Dashboard WebSocket connected');
+      ws.send(JSON.stringify({ type: 'authenticate', sessionId: user.sessionId }));
+    };
+    
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'new_message') {
+          // Reload messages when new message arrives
+          loadRecentMessages();
+        } else if (data.type === 'status_change') {
+          // Update connection status in real-time
+          setConnectionStatus(data.status);
+        }
+      } catch (error) {
+        console.error('Dashboard WebSocket message parse error:', error);
+      }
+    };
+    
+    ws.onclose = (event) => {
+      console.log('Dashboard WebSocket disconnected:', event.code, event.reason);
+      // Don't attempt to reconnect automatically from Dashboard
+    };
+    
+    ws.onerror = (error) => {
+      console.error('Dashboard WebSocket error:', error);
+    };
 
     // Cleanup on component unmount
-    return () => clearInterval(intervalId);
+    return () => {
+      ws.close();
+    };
   }, [user.sessionId]);
 
   const fetchUpdates = () => {

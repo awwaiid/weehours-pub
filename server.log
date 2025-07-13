@@ -1,103 +1,22 @@
 
-> zeehours-pub@1.0.0 web
+> weehours-pub@1.0.0 web
 > ts-node src/server/index.ts
 
+/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/server/web-server.ts(24,11): error TS2564: Property 'wss' has no initializer and is not definitely assigned in the constructor.
 
-
---- SERVER RESTARTING AT 2025-07-12T23:29:05.137Z ---
-WeeHours MUD Web Server
-=======================
-Starting on port 3000...
-Creating database tables...
-Executing statement 1/4: CREATE TABLE IF NOT EXISTS user_sessions (
-    id ...
-Statement 1 executed successfully
-Executing statement 2/4: CREATE TABLE IF NOT EXISTS raw_messages (
-    id I...
-Statement 2 executed successfully
-Executing statement 3/4: CREATE TABLE IF NOT EXISTS parsed_events (
-    id ...
-Statement 3 executed successfully
-Executing statement 4/4: CREATE TABLE IF NOT EXISTS chat_messages (
-    id ...
-Statement 4 executed successfully
-Database initialized successfully
-WebServer running on http://localhost:3000
-Next.js app ready
- ○ Compiling / ...
- ✓ Compiled / in 3.3s (687 modules)
- GET / 200 in 5170ms
- ✓ Compiled in 740ms (687 modules)
- GET / 200 in 918ms
- ✓ Compiled in 610ms (687 modules)
- GET / 200 in 824ms
- ✓ Compiled in 916ms (687 modules)
- GET / 200 in 815ms
- ✓ Compiled in 637ms (687 modules)
- GET / 200 in 603ms
- ✓ Compiled in 390ms (687 modules)
- GET / 200 in 770ms
- ✓ Compiled in 581ms (687 modules)
- GET / 200 in 564ms
- ✓ Compiled in 508ms (687 modules)
- GET / 200 in 708ms
- ✓ Compiled in 603ms (687 modules)
- GET / 200 in 726ms
- ✓ Compiled in 613ms (687 modules)
- GET / 200 in 759ms
- ✓ Compiled in 488ms (687 modules)
- GET / 200 in 749ms
- ✓ Compiled in 497ms (687 modules)
- GET / 200 in 717ms
- ✓ Compiled in 470ms (687 modules)
- GET / 200 in 876ms
- ✓ Compiled in 829ms (687 modules)
- GET / 200 in 702ms
- ✓ Compiled in 619ms (687 modules)
- GET / 200 in 882ms
- ✓ Compiled in 724ms (687 modules)
- GET / 200 in 724ms
- ✓ Compiled in 543ms (687 modules)
- GET / 200 in 712ms
- ✓ Compiled in 571ms (687 modules)
- GET / 200 in 668ms
- ✓ Compiled in 612ms (687 modules)
- GET / 200 in 729ms
- ✓ Compiled in 486ms (687 modules)
- GET / 200 in 676ms
- ✓ Compiled in 645ms (687 modules)
- GET / 200 in 807ms
- ✓ Compiled in 644ms (687 modules)
- GET / 200 in 600ms
- ✓ Compiled in 493ms (687 modules)
- GET / 200 in 670ms
- ✓ Compiled in 354ms (687 modules)
- GET / 200 in 630ms
- ✓ Compiled in 520ms (687 modules)
- GET / 200 in 594ms
- ✓ Compiled in 721ms (687 modules)
- GET / 200 in 713ms
- ✓ Compiled in 496ms (687 modules)
- GET / 200 in 709ms
- ✓ Compiled in 510ms (687 modules)
- GET / 200 in 604ms
- ✓ Compiled in 573ms (687 modules)
- GET / 200 in 568ms
- ✓ Compiled in 569ms (687 modules)
- GET / 200 in 670ms
- ✓ Compiled in 683ms (687 modules)
- GET / 200 in 738ms
- ✓ Compiled in 694ms (687 modules)
- GET / 200 in 835ms
- ✓ Compiled in 604ms (687 modules)
- GET / 200 in 740ms
- ✓ Compiled in 849ms (687 modules)
- GET / 200 in 830ms
- ✓ Compiled in 673ms (687 modules)
- GET / 200 in 593ms
- ✓ Compiled in 585ms (687 modules)
- GET / 200 in 572ms
- ✓ Compiled in 696ms (687 modules)
- GET / 200 in 505ms
- ✓ Compiled in 861ms (687 modules)
- GET / 200 in 598ms
+    at createTSError (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:859:12)
+    at reportTSError (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:863:19)
+    at getOutput (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:1077:36)
+    at Object.compile (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:1433:41)
+    at Module.m._compile (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Object.require.extensions.<computed> [as .ts] (/home/awwaiid/tlt/projects/js/weehours-pub/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19) {
+  diagnosticCodes: [ 2564 ]
+}

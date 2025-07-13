@@ -3,6 +3,7 @@ import http from 'http';
 import session, { Session } from 'express-session';
 import cookieParser from 'cookie-parser';
 import next from 'next';
+import { WebSocketServer, WebSocket } from 'ws';
 import { UserSessionManager } from '../sessions/user-session-manager';
 
 export interface AuthenticatedUser {
@@ -20,6 +21,8 @@ export class WebServer {
   private sessionManager: UserSessionManager;
   private port: number;
   private nextApp: any;
+  private wss!: WebSocketServer;
+  private wsClients: Map<string, Set<WebSocket>> = new Map();
 
   constructor(port: number = 3000) {
     this.port = port;
@@ -321,14 +324,97 @@ export class WebServer {
     });
   }
 
+  private setupWebSocket(): void {
+    this.wss = new WebSocketServer({ 
+      server: this.server,
+      path: '/ws'
+    });
+    
+    this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+      console.log('New WebSocket connection');
+      
+      // Send a ping to keep connection alive
+      ws.ping();
+      
+      ws.on('message', async (data: Buffer) => {
+        try {
+          const message = JSON.parse(data.toString());
+          console.log('WebSocket received message:', message);
+          
+          if (message.type === 'authenticate') {
+            // Store the session ID with this WebSocket connection
+            const { sessionId } = message;
+            if (sessionId) {
+              // Add this WebSocket to the set for this session
+              if (!this.wsClients.has(sessionId)) {
+                this.wsClients.set(sessionId, new Set());
+              }
+              this.wsClients.get(sessionId)!.add(ws);
+              console.log(`WebSocket authenticated for session: ${sessionId} (${this.wsClients.get(sessionId)!.size} connections)`);
+              
+              // Send confirmation
+              ws.send(JSON.stringify({ type: 'authenticated', sessionId }));
+            } else {
+              console.error('WebSocket authenticate message missing sessionId');
+            }
+          }
+        } catch (error) {
+          console.error('WebSocket message error:', error);
+        }
+      });
+      
+      ws.on('close', (code, reason) => {
+        console.log(`WebSocket closed with code: ${code}, reason: ${reason}`);
+        // Remove from client map
+        for (const [sessionId, clientSet] of this.wsClients.entries()) {
+          if (clientSet.has(ws)) {
+            clientSet.delete(ws);
+            console.log(`WebSocket disconnected for session: ${sessionId} (${clientSet.size} remaining)`);
+            // Clean up empty sets
+            if (clientSet.size === 0) {
+              this.wsClients.delete(sessionId);
+            }
+            break;
+          }
+        }
+      });
+      
+      ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
+      });
+    });
+  }
+
+  // Method to broadcast new messages to connected clients
+  public broadcastToSession(sessionId: string, data: any): void {
+    const clientSet = this.wsClients.get(sessionId);
+    if (clientSet) {
+      const message = JSON.stringify(data);
+      for (const client of clientSet) {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      }
+    }
+  }
+
   async start(): Promise<void> {
     await this.sessionManager.initialize();
     await this.nextApp.prepare();
+    
+    // Set up WebSocket broadcasting for session manager
+    this.sessionManager.setWebSocketBroadcast((sessionId: string, data: any) => {
+      this.broadcastToSession(sessionId, data);
+    });
+    
+    // Initialize WebSocket server
+    this.setupWebSocket();
     
     return new Promise((resolve) => {
       this.server.listen(this.port, () => {
         console.log(`WebServer running on http://localhost:${this.port}`);
         console.log('Next.js app ready');
+        console.log('WebSocket server ready');
         resolve();
       });
     });
