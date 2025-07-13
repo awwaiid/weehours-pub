@@ -77,11 +77,15 @@ export class Database {
     `;
     
     try {
+      // Mask password in outgoing messages
+      const maskedContent = this.maskPassword(message.content, message.direction);
+      const maskedStripped = this.maskPassword(message.content_stripped || this.stripAnsi(message.content), message.direction);
+      
       await this.runAsync(sql, [
         message.user_session_id,
         message.direction,
-        message.content,
-        message.content_stripped || this.stripAnsi(message.content)
+        maskedContent,
+        maskedStripped
       ]);
     } catch (error) {
       console.error('Failed to log message:', error);
@@ -222,6 +226,39 @@ export class Database {
   private stripAnsi(text: string): string {
     // eslint-disable-next-line no-control-regex
     return text.replace(/\x1b\[[0-9;]*m/g, '');
+  }
+
+  private maskPassword(content: string, direction: 'incoming' | 'outgoing'): string {
+    // Only mask outgoing messages (user input)
+    if (direction !== 'outgoing') {
+      return content;
+    }
+
+    // Check if this looks like a password input during login sequence
+    // Password input typically happens after "Password:" prompt and contains no spaces
+    const trimmed = content.trim();
+    
+    // If it's a simple string with no spaces and not obviously a command, mask it
+    // This catches password inputs but not normal commands like "look" or "say hello"
+    if (trimmed.length > 0 && 
+        !trimmed.includes(' ') && 
+        !trimmed.startsWith('>') &&
+        !this.isKnownCommand(trimmed)) {
+      return '[PASSWORD MASKED]';
+    }
+
+    return content;
+  }
+
+  private isKnownCommand(input: string): boolean {
+    const knownCommands = [
+      'look', 'l', 'who', 'quit', 'help', 'north', 'south', 'east', 'west',
+      'n', 's', 'e', 'w', 'up', 'down', 'inventory', 'i', 'get', 'drop',
+      'say', 'tell', 'emote', 'pose', 'web', 'idle', 'mail', 'read'
+    ];
+    
+    const lowerInput = input.toLowerCase();
+    return knownCommands.some(cmd => lowerInput === cmd || lowerInput.startsWith(cmd + ' '));
   }
 
   async close(): Promise<void> {

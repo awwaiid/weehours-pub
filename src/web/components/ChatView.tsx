@@ -91,6 +91,10 @@ export default function ChatView({ sessionId, refreshTrigger }: ChatViewProps) {
           </div>
         );
         
+      case 'password_input':
+        // Never render password inputs
+        return null;
+        
       case 'user_command': {
         // Don't render chat commands since they'll be echoed back by the server
         const command = event.data.command?.toLowerCase() || '';

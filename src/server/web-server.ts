@@ -15,12 +15,17 @@ interface CustomSession extends Session {
   user?: Partial<AuthenticatedUser>;
 }
 
+interface NextApp {
+  getRequestHandler(): (req: express.Request, res: express.Response) => void;
+  prepare(): Promise<void>;
+}
+
 export class WebServer {
   private app: express.Application;
   private server: http.Server;
   private sessionManager: UserSessionManager;
   private port: number;
-  private nextApp: unknown;
+  private nextApp: NextApp;
   private wss!: WebSocketServer;
   private wsClients: Map<string, Set<WebSocket>> = new Map();
 
@@ -42,7 +47,7 @@ export class WebServer {
         basePath,
         assetPrefix: basePath
       }
-    });
+    }) as NextApp;
     
     this.setupMiddleware();
     this.setupRoutes();
@@ -392,7 +397,7 @@ export class WebServer {
     });
 
     // Handle Next.js routes (must be last)
-    const handle = (this.nextApp as any).getRequestHandler();
+    const handle = this.nextApp.getRequestHandler();
     this.app.all('*', (req, res) => {
       return handle(req, res);
     });
@@ -475,7 +480,7 @@ export class WebServer {
 
   async start(): Promise<void> {
     await this.sessionManager.initialize();
-    await (this.nextApp as any).prepare();
+    await this.nextApp.prepare();
     
     // Set up WebSocket broadcasting for session manager
     this.sessionManager.setWebSocketBroadcast((sessionId: string, data: unknown) => {

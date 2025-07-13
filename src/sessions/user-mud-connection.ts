@@ -185,11 +185,16 @@ export class UserMudConnection {
         content: command
       });
       
-      // Create a command event
+      // Create a command event - check if this is a password input
+      const isPasswordInput = this.loginState === 'password' && command.trim() === this.userSession.password;
+      
       await this.database.logParsedEvent({
         user_session_id: this.userSession.id,
-        event_type: 'user_command',
-        data: {
+        event_type: isPasswordInput ? 'password_input' : 'user_command',
+        data: isPasswordInput ? {
+          message: '[PASSWORD MASKED]',
+          player: this.userSession.username
+        } : {
           command: command.trim(),
           player: this.userSession.username
         }

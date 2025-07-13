@@ -28,7 +28,8 @@ export class MessageParser {
     TELNET_NEGOTIATION: 'telnet_negotiation',
     WELCOME_SCREEN: 'welcome_screen',
     URL_SUBMISSION: 'url_submission',
-    USER_COMMAND: 'user_command'
+    USER_COMMAND: 'user_command',
+    PASSWORD_INPUT: 'password_input'
   } as const;
 
   private context: MessageParserContext = {
