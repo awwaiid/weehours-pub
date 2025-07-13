@@ -2,6 +2,8 @@
 
 Technically it is a whole-mud client I guess, but I am only optimizing for chatting in the pub.
 
+![mobile view](docs/mobile.png)
+
 ## Architecture
 
 An express/nextjs app, typescript, that runs on my cloud server. I connect to it with a browser, and the server in turn connects to weehours.net. If I disconnect the browser the connection to weehours persists. I used to do this with the IRC gateway, but wanted something different.
