@@ -10,7 +10,7 @@ export default function ViewToggle({ currentView, onViewChange }: ViewToggleProp
     <div className="flex bg-mud-light border border-mud-green rounded-lg p-1">
       <button
         onClick={() => onViewChange('chat')}
-        className={`px-4 py-2 rounded-md font-mono text-sm transition-all ${
+        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-md font-mono text-xs sm:text-sm transition-all ${
           currentView === 'chat'
             ? 'bg-mud-green text-black'
             : 'text-mud-green hover:bg-mud-dark'
@@ -20,7 +20,7 @@ Chat
       </button>
       <button
         onClick={() => onViewChange('terminal')}
-        className={`px-4 py-2 rounded-md font-mono text-sm transition-all ${
+        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-md font-mono text-xs sm:text-sm transition-all ${
           currentView === 'terminal'
             ? 'bg-mud-green text-black'
             : 'text-mud-green hover:bg-mud-dark'

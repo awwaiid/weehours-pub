@@ -47,20 +47,13 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
   };
 
   return (
-    <div className="mud-card">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-mud-green">
-          MUD Terminal
-        </h3>
-        <span className="text-sm text-mud-cyan">
-          {messages.length} messages
-        </span>
-      </div>
-      
-      <div
-        ref={terminalRef}
-        className="mud-terminal"
-      >
+    <div
+      ref={terminalRef}
+      className="h-full overflow-y-auto bg-black text-mud-green font-mono text-sm border border-mud-bronze rounded"
+      style={{ 
+        fontFamily: '"Courier New", monospace'
+      }}
+    >
         {messages.length === 0 ? (
           <div className="text-gray-400 italic">
             No messages yet. Connect to the MUD to start chatting!
@@ -78,7 +71,6 @@ export default function MudTerminal({ messages }: MudTerminalProps) {
             );
           })
         )}
-      </div>
     </div>
   );
 }

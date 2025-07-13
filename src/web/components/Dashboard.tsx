@@ -128,46 +128,45 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center p-2 sm:p-4 bg-mud-dark border-b border-mud-bronze">
         <div>
-          <h2 className="text-2xl font-bold text-mud-green">
+          <h2 className="text-lg sm:text-2xl font-bold text-mud-green">
             Greetings, {user.username}
           </h2>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <StatusBar status={connectionStatus} compact={true} />
           <ViewToggle 
             currentView={currentView} 
             onViewChange={setCurrentView}
           />
           <button
             onClick={handleLogout}
-            className="mud-button"
+            className="mud-button text-xs sm:text-sm px-2 sm:px-4"
           >
 Logout
           </button>
         </div>
       </div>
 
-      {/* Status Bar */}
-      <StatusBar status={connectionStatus} />
 
-      {/* Main Interface */}
-      <div className="w-full">
-        {/* Terminal or Chat View */}
+      {/* Main Chat/Terminal Area - Takes remaining space */}
+      <div className="flex-1 overflow-hidden">
         {currentView === 'terminal' ? (
           <MudTerminal messages={messages} />
         ) : (
           <ChatView sessionId={user.sessionId} />
         )}
-        
-        <div className="mt-4">
-          <CommandInput
-            onSendCommand={handleSendCommand}
-            disabled={!connectionStatus.isConnected}
-          />
-        </div>
+      </div>
+      
+      {/* Command Input - Fixed at bottom */}
+      <div className="p-4 bg-mud-dark border-t border-mud-bronze">
+        <CommandInput
+          onSendCommand={handleSendCommand}
+          disabled={!connectionStatus.isConnected}
+        />
       </div>
     </div>
   );

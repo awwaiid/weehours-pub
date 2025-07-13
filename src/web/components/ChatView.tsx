@@ -161,25 +161,18 @@ export default function ChatView({ sessionId }: ChatViewProps) {
   return (
     <div 
       ref={scrollRef}
-      className="mud-terminal h-96"
+      className="h-full overflow-y-auto bg-black text-mud-green border border-mud-bronze rounded"
       style={{ 
-        backgroundColor: '#000000',
-        color: 'var(--color-mud-green)',
         fontFamily: '"Courier New", monospace',
         fontSize: '0.875rem',
-        padding: '1rem',
-        borderRadius: '0.375rem',
-        border: '1px solid var(--color-mud-light)',
-        height: '24rem',
-        overflowY: 'auto',
         whiteSpace: 'normal'
       }}
     >
-      {events.length === 0 ? (
-        <div className="text-gray-400 italic">No parsed events yet. Try connecting and sending some commands!</div>
-      ) : (
-        events.map(renderEvent)
-      )}
+        {events.length === 0 ? (
+          <div className="text-gray-400 italic">No parsed events yet. Try connecting and sending some commands!</div>
+        ) : (
+          events.map(renderEvent)
+        )}
     </div>
   );
 }

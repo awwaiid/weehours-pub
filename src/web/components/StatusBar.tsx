@@ -9,9 +9,10 @@ interface ConnectionStatus {
 
 interface StatusBarProps {
   status: ConnectionStatus
+  compact?: boolean
 }
 
-export default function StatusBar({ status }: StatusBarProps) {
+export default function StatusBar({ status, compact = false }: StatusBarProps) {
   const getStatusColor = (state: string) => {
     switch (state) {
       case 'connected':
@@ -59,6 +60,19 @@ export default function StatusBar({ status }: StatusBarProps) {
       return 'Not connected';
     }
   };
+
+  if (compact) {
+    return (
+      <div className="flex items-center space-x-2 px-3 py-1 bg-mud-light border border-mud-bronze rounded text-sm">
+        <span className={`${getStatusColor(status.state)}`}>
+          {getStatusIcon(status.state)}
+        </span>
+        <span className={`${getStatusColor(status.state)} font-medium`}>
+          {status.state.charAt(0).toUpperCase() + status.state.slice(1)}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="mud-card">

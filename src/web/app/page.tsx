@@ -21,23 +21,22 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-mud-dark">
-      <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-mud-green mb-2">
-            WeeHours Pub Chat
-          </h1>
-          <p className="text-mud-cyan">
-            Scheming over pints with your pals
-          </p>
-        </header>
-
-        {!user ? (
+    <main className="h-screen bg-mud-dark overflow-hidden">
+      {!user ? (
+        <div className="container mx-auto px-4 py-8 h-full flex flex-col justify-center">
+          <header className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-mud-green mb-2">
+              WeeHours Pub Chat
+            </h1>
+            <p className="text-mud-cyan">
+              Scheming over pints with your pals
+            </p>
+          </header>
           <AuthForm onAuth={handleAuth} />
-        ) : (
-          <Dashboard user={user} onLogout={handleLogout} />
-        )}
-      </div>
+        </div>
+      ) : (
+        <Dashboard user={user} onLogout={handleLogout} />
+      )}
     </main>
   );
 }
