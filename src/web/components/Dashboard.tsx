@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { apiCall, getWebSocketUrl } from '../lib/api';
+import { apiCall } from '../lib/api';
+import { useWebSocket } from '../hooks/useWebSocket';
 import MudTerminal from './MudTerminal';
 import CommandInput from './CommandInput';
 import StatusBar from './StatusBar';
@@ -37,6 +38,7 @@ interface ConnectionStatus {
   messageCount: number
 }
 
+
 export default function Dashboard({ user, onLogout }: DashboardProps) {
   const [messages, setMessages] = useState<MudMessage[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
@@ -48,49 +50,27 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   const [currentView, setCurrentView] = useState<'terminal' | 'chat'>('chat');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // WebSocket connection with auto-reconnection
+  const webSocketStatus = useWebSocket({
+    sessionId: user.sessionId,
+    onMessage: (data) => {
+      if (data.type === 'new_message') {
+        // Reload messages when new message arrives
+        loadRecentMessages();
+        // Trigger refresh for ChatView
+        setRefreshTrigger(prev => prev + 1);
+      } else if (data.type === 'status_change') {
+        // Update connection status in real-time
+        setConnectionStatus(data.status);
+      }
+    },
+    reconnectInterval: 3000,
+    maxReconnectAttempts: 10
+  });
+
   useEffect(() => {
     // Initial data load
     fetchUpdates();
-
-    // Set up WebSocket connection for real-time updates
-    const ws = new WebSocket(getWebSocketUrl());
-    
-    ws.onopen = () => {
-      console.log('Dashboard WebSocket connected');
-      ws.send(JSON.stringify({ type: 'authenticate', sessionId: user.sessionId }));
-    };
-    
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        
-        if (data.type === 'new_message') {
-          // Reload messages when new message arrives
-          loadRecentMessages();
-          // Trigger refresh for ChatView
-          setRefreshTrigger(prev => prev + 1);
-        } else if (data.type === 'status_change') {
-          // Update connection status in real-time
-          setConnectionStatus(data.status);
-        }
-      } catch (error) {
-        console.error('Dashboard WebSocket message parse error:', error);
-      }
-    };
-    
-    ws.onclose = (event) => {
-      console.log('Dashboard WebSocket disconnected:', event.code, event.reason);
-      // Don't attempt to reconnect automatically from Dashboard
-    };
-    
-    ws.onerror = (error) => {
-      console.error('Dashboard WebSocket error:', error);
-    };
-
-    // Cleanup on component unmount
-    return () => {
-      ws.close();
-    };
   }, [user.sessionId]);
 
   const fetchUpdates = () => {
@@ -166,7 +146,11 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           </h2>
         </div>
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <StatusBar status={connectionStatus} compact={true} />
+          <StatusBar 
+            status={connectionStatus} 
+            webSocketStatus={webSocketStatus}
+            compact={true} 
+          />
           <ViewToggle 
             currentView={currentView} 
             onViewChange={setCurrentView}

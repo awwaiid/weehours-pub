@@ -7,12 +7,20 @@ interface ConnectionStatus {
   messageCount: number
 }
 
+interface WebSocketStatus {
+  isConnected: boolean
+  isConnecting: boolean
+  reconnectAttempt: number
+  lastError?: string
+}
+
 interface StatusBarProps {
   status: ConnectionStatus
+  webSocketStatus?: WebSocketStatus
   compact?: boolean
 }
 
-export default function StatusBar({ status, compact = false }: StatusBarProps) {
+export default function StatusBar({ status, webSocketStatus, compact = false }: StatusBarProps) {
   const getStatusColor = (state: string) => {
     switch (state) {
       case 'connected':
@@ -70,6 +78,19 @@ export default function StatusBar({ status, compact = false }: StatusBarProps) {
         <span className={`${getStatusColor(status.state)} font-medium`}>
           {status.state.charAt(0).toUpperCase() + status.state.slice(1)}
         </span>
+        {webSocketStatus && (
+          <>
+            <span className="text-gray-400">|</span>
+            <span className={webSocketStatus.isConnected ? 'text-green-400' : webSocketStatus.isConnecting ? 'text-yellow-400' : 'text-red-400'}>
+              {webSocketStatus.isConnected ? '●' : webSocketStatus.isConnecting ? '◐' : '○'}
+            </span>
+            <span className="text-xs text-gray-400">
+              {webSocketStatus.isConnected ? 'WS' : 
+               webSocketStatus.isConnecting ? `WS (${webSocketStatus.reconnectAttempt})` : 
+               'WS'}
+            </span>
+          </>
+        )}
       </div>
     );
   }
