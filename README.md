@@ -2,7 +2,7 @@
 
 Technically it is a whole-mud client I guess, but I am only optimizing for chatting in the pub.
 
-![mobile view](docs/mobile.png)
+<img alt="mobile view" src="docs/mobile.png" width=300 align=right style="margin-left: 20px; border: 1px solid white"/>
 
 ## Architecture
 
